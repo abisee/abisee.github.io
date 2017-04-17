@@ -150,7 +150,7 @@ This tells you where the network was "looking" when it produced that word.
 
 For the pointer-generator models, the value of the generation probability is also visualized in <span style="background-color: #16e983">green</span>. Hovering the cursor over a word from one of those summaries will show you the value of the generation probability $$p_{\text{gen}}$$ for that word.
 
-*Note: you may need to zoom out using your browser window to view the demo all on one screen. May not work for mobile.*
+*Note: you may need to zoom out using your browser window to view the demo all on one screen. Does not work for mobile.*
 
 {% include attn_vis.html %}
 
