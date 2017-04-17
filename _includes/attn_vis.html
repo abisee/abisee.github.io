@@ -26,7 +26,7 @@ greenhue = 151
 
 function round(x, dp) {
   // round a float to dp decimal places
-  var power_of_10 = 10**dp
+  var power_of_10 = Math.pow(10,dp)
   return parseFloat(Math.round(x*power_of_10)/power_of_10).toFixed(dp)
 }
 
