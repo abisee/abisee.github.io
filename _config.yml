@@ -6,7 +6,7 @@ url: "http://abigailsee.com" # the base hostname & protocol for your site
 theme_settings:
   # Meta
   title: Abigail See
-  avatar: avatar.jpg
+  avatar: 
   gravatar: # Email MD5 hash
   description: "A blog about artificial intelligence, deep learning and natural language processing" # used by search engines
 
