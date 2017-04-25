@@ -141,7 +141,7 @@ Lastly, we introduce an extra loss term to penalize any overlap between the cove
 
 $$\text{covloss}_t = \sum_i \min(a_i^t, c_i^t)$$
 
-This discourages the network from attending (thus summarizing) anything that's already been covered.
+This discourages the network from attending to (thus summarizing) anything that's already been covered.
 
 ### Example Output
 
