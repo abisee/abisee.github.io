@@ -42,7 +42,7 @@ In short: abstractive summarization may be difficult, but it's essential!
 
 *If you're unfamiliar with Recurrent Neural Networks or the attention mechanism, check out the excellent tutorials by [WildML](http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-1-introduction-to-rnns/), [Andrej Karpathy](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and [Distill](http://distill.pub/2016/augmented-rnns/).*
 
-In the past few years, the Recurrent Neural Network (RNN) -- a type of neural network that can perform calculations on sequences of data (e.g. sequences of words) -- has become the standard approach for many Natural Language Processing tasks.
+In the past few years, the Recurrent Neural Network (RNN) -- a type of neural network that can perform calculations on sequential data (e.g. sequences of words) -- has become the standard approach for many Natural Language Processing tasks.
 In particular, the *sequence-to-sequence model with attention*, illustrated below, has become popular for summarization.
 Let's step through the diagram!
 
@@ -114,9 +114,13 @@ Compared to the sequence-to-sequence-with-attention system, the pointer-generato
 
 1. The pointer-generator network makes it **easy** to copy words from the source text. The network simply needs to put sufficiently large attention on the relevant word, and make $$p_{\text{gen}}$$ sufficiently large.
 2. The pointer-generator model is even able to copy **out-of-vocabulary** words from the source text. This is a major bonus, enabling us to handle unseen words while also allowing us to use a smaller vocabulary (which requires less computation and storage space).
-3. The pointer-generator model is **faster to train**, particularly during the early stages of training.
+3. The pointer-generator model is **faster to train**, requiring fewer training iterations to achieve the same performance as the sequence-to-sequence attention system.
 
 In this way, the pointer-generator network is a *best of both worlds*, combining both extraction (pointing) and abstraction (generating).
+
+<p align="center">
+<img src="{{site.url}}/img/highlighter_plus_pen.png" height="100px">
+</p>
 
 
 ### Eliminating Repetition with Coverage
@@ -137,7 +141,7 @@ Lastly, we introduce an extra loss term to penalize any overlap between the cove
 
 $$\text{covloss}_t = \sum_i \min(a_i^t, c_i^t)$$
 
-This prevents the network from attending (thus summarizing) anything that's already been covered.
+This discourages the network from attending (thus summarizing) anything that's already been covered.
 
 ### Example Output
 
