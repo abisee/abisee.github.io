@@ -55,7 +55,7 @@ First, the *<font color="#db4437">encoder RNN</font>* reads in the source text w
 Once the encoder has read the entire source text, the *<font color="#f4b400">decoder RNN</font>* begins to output a sequence of words that should form a summary.
 On each step, the decoder receives as input the previous word of the summary (on the first step, this is a special &lt;START&gt; token which is the signal to begin writing) and uses it to update the *<font color="#f4b400">decoder hidden state</font>*.
 This is used to calculate the *<font color="#4285f4">attention distribution</font>*, which is a probability distribution over the words in the source text.
-Intuitively, the attention distribution tells the network "where to look" to help it produce the next word.
+Intuitively, the attention distribution tells the network where to look to help it produce the next word.
 In the diagram above, the decoder has so far produced the first word *Germany*, and is concentrating on the source words *win* and *victorious* in order to generate the next word *beat*.
 
 Next, the attention distribution is used to produce a weighted sum of the encoder hidden states, known as the *<font color="#4285f4">context vector</font>*.
@@ -161,11 +161,11 @@ For the pointer-generator models, the value of the generation probability is als
 <br>
 #### Observations:
 
-* The basic sequence-to-sequence system is unable to copy out-of-vocabulary words like *Saili*, outputting the "unknown token" <font color="red">[UNK]</font> instead. By contrast the pointer-generator systems have no trouble copying this word.
+* The basic sequence-to-sequence system is unable to copy out-of-vocabulary words like *Saili*, outputting the unknown token <font color="red">[UNK]</font> instead. By contrast the pointer-generator systems have no trouble copying this word.
 * Though this story happens in *New Zealand*, the basic sequence-to-sequence system mistakenly reports that the player is *<font color="red">Dutch</font>* and the team *<font color="red">Irish</font>* -- perhaps reflecting the European bias of the training data. When it produced these words, the network was mostly attending to the names *Munster* and *Francis* -- it seems the system struggled to copy these correctly.
 * For reasons unknown, the phrase *a great addition to their backline* is replaced with the nonsensical phrase *a great addition to their* *<font color="red">respective prospects</font>* by the basic sequence-to-sequence system. Though the network was attending directly to the word *backline*, it was not copied correctly.
 * The basic pointer-generator summary repeats itself, and we see that it's attending to the same parts of the source text each time. By contrast the pointer-generator + coverage model contains no repetition, and we can see that though it uses the word *Saili* twice, the network attends to completely different occurrences of the word each time -- evidence of the coverage system in action.
-* The <span style="background-color: #16e983">green shading</span> shows that the generation probability tends to be high whenever the network is "editing" the source text. For example, $$p_{\text{gen}}$$ is high when the network produces a period to shorten a sentence, and when jumping to another part of the text such as *__will__ move to the province...* and *__was__ part of the new zealand under-20 side...*.
+* The <span style="background-color: #16e983">green shading</span> shows that the generation probability tends to be high whenever the network is editing the source text. For example, $$p_{\text{gen}}$$ is high when the network produces a period to shorten a sentence, and when jumping to another part of the text such as *__will__ move to the province...* and *__was__ part of the new zealand under-20 side...*.
 * For all three systems, the attention distribution is fairly focused: usually looking at just one or two words at a time. Errors tend to occur when the attention is more scattered, indicating that perhaps the network is unsure what to do.
 * All three systems attend to *Munster* and *Francis* when producing the first word of the summary. In general, the networks tend to seek out names to begin summaries.
 
@@ -180,7 +180,7 @@ Though we've shown that these improvements help to tame some of the wild behavio
 * Multi-sentence summaries sometimes **fail to make sense a whole**, for example referring to an entity by pronoun (e.g. *she*) without first introducing it (e.g. *German Chancellor Angela Merkel*).
 
 I believe the most important direction for future research is *interpretability*.
-The attention mechanism, by revealing what the network is "looking at", shines some precious light into the black box of neural networks, helping us to "debug" problems like repetition and copying.
+The attention mechanism, by revealing what the network is "looking at", shines some precious light into the black box of neural networks, helping us to debug problems like repetition and copying.
 To make further advances, we need greater insight into *what* RNNs are learning from text and *how* that knowledge is represented.
 
 
