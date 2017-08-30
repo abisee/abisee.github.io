@@ -8,7 +8,7 @@ subtitle: "Part One: Linguistic Structure and Word Embeddings"
 
 ## Introduction
 
-["NLP is booming"](https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/4?src=clipshare), declared Joakim Nivre at the presidential address of ACL 2017, which I attended in Vancouver earlier this month. As evidenced by the throngs of attendees, interest in NLP is at an all-time high -- an increase that is chiefly due to the successes of the deep learning renaissance, which recently swept like a tidal wave over the field.
+["NLP is booming"](https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/4?src=clipshare), declared Joakim Nivre at the presidential address of ACL 2017, which I attended in Vancouver earlier this month. As evidenced by the throngs of attendees, interest in NLP is at an all-time high &ndash; an increase that is chiefly due to the successes of the deep learning renaissance, which recently swept like a tidal wave over the field.
 
 Beneath the optimism however, I noticed a tangible anxiety at ACL, as one field adjusts to its rapid transformation by another. Researchers asked whether there is anything of the old NLP left -- or was it all swept away by the tidal wave? Are neural networks the only technique we need any more? How do we do good science now that experiments are so empirical, papers are immediately on arXiv, and access to GPUs can determine success?
 
