@@ -1,0 +1,81 @@
+<head>
+<script src="{{site.url}}/js/external/d3.min.js"></script>
+<script src="{{site.url}}/js/external/jquery-3.1.0.min.js"></script>
+<script src="{{site.url}}/js/external/underscore-min.js"></script>
+<script src="{{site.url}}/js/external/sprintf.min.js"></script>
+
+<script>
+
+// Define the div for the tooltip
+var tooltip_div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+function start() {
+  var json_fname = "/bibliography/bibliography.json"
+
+  function json_success(data) {
+    // Displays the data
+    console.log("successfully loaded json file.")
+    var id2data = {}
+    for (var i=0; i<data.length; i++) {
+      var pub = data[i]
+      id2data[pub.id] = pub
+    }
+    add_citations(id2data)
+  }
+
+  function json_fail(d) {
+    console.log("failure to load " + json_fname)
+  }
+
+  $.getJSON(json_fname, json_success).fail(json_fail);
+}
+
+function get_url(key, id2data) {
+  var pub = id2data[key]
+  return pub.url
+}
+
+function get_info(key, id2data) {
+  var pub = id2data[key]
+  var title = pub.title
+  var authors = pub.author
+  var author_string = ""
+  for (var i=0; i<authors.length; i++) {
+    var author = authors[i]
+    author_string += author.given + " " + author.family
+    if (i<authors.length-1) {
+      author_string += ", "
+    }
+  }
+  var venue = pub["short-venue"]
+  var year = pub.issued["date-parts"][0]
+  var html = "<i><b>" + title + ".</b></i><br>" + author_string + ".<br>" + venue + ", " + year + "."
+  return html
+}
+
+function add_citations(id2data) {
+  d3.select("body").selectAll(".citation")
+    .on("mouseover", function() {
+      var key = this.getAttribute("key")
+      var info = get_info(key,id2data)
+      tooltip_div.transition()
+          .duration(200)
+          .style("opacity", 1);
+      tooltip_div.html(info)
+          .style("left", (d3.event.pageX - 150) + "px")
+          .style("top", (d3.event.pageY + 20) + "px");
+      })
+    .on("mouseout", function() {
+      tooltip_div.transition()
+          .duration(200)
+          .style("opacity", 0);
+    });
+}
+
+</script>
+
+</head>
+
+<body onload="start();"></body>

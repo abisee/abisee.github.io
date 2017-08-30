@@ -16,15 +16,11 @@ There are broadly two approaches to automatic text summarization: *extractive* a
 
 * **Extractive** approaches select passages from the source text, then arrange them to form a summary. You might think of these approaches as like a highlighter.
 
-<p align="center">
-<img src="{{site.url}}/img/highlighter.jpg" width="100px" height="100px">
-</p>
+![a highlighter]({{site.url}}/img/highlighter.jpg)
 
 * **Abstractive** approaches use natural language generation techniques to write novel sentences. By the same analogy, these approaches are like a pen.
 
-<p align="center">
-<img src="{{site.url}}/img/pen.jpg" width="100px" height="100px">
-</p>
+![a pen]({{site.url}}/img/pen.jpg)
 
 The great majority of existing approaches to automatic summarization are extractive -- mostly because it is much easier to *select* text than it is to *generate* text from scratch.
 For example, if your extractive approach involves selecting and rearranging whole sentences from the source text, you are guaranteed to produce a summary that is grammatical, fairly readable, and related to the source text.
@@ -98,7 +94,7 @@ Our solution for **Problem 1** (inaccurate copying) is the *pointer-generator ne
 This is a hybrid network that can choose to copy words from the source via *pointing*, while retaining the ability to *generate* words from the fixed vocabulary.
 Let's step through the diagram!
 
-![sequence-to-sequence network with attention]({{site.url}}/img/pointer-gen.png)
+![pointer-generator network]({{site.url}}/img/pointer-gen.png)
 
 This diagram shows the third step of the decoder, when we have so far generated the partial summary *Germany beat*.
 As before, we calculate an *<font color="#4285f4">attention distribution</font>* and a *<font color="#0f9d58">vocabulary distribution</font>*.
@@ -118,10 +114,7 @@ Compared to the sequence-to-sequence-with-attention system, the pointer-generato
 
 In this way, the pointer-generator network is a *best of both worlds*, combining both extraction (pointing) and abstraction (generating).
 
-<p align="center">
-<img src="{{site.url}}/img/highlighter_plus_pen.png" height="100px">
-</p>
-
+![highlighter plus pen]({{site.url}}/img/highlighter_plus_pen_100h.png)
 
 ### Eliminating Repetition with Coverage
 

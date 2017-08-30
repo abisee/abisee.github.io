@@ -1,3 +1,27 @@
+img {
+    display: block;
+    margin: auto; // center all images
+}
+.image-wrapper { // for captioning, from here: https://superdevresources.com/image-caption-jekyll/
+    text-align: center;
+    .image-caption {
+        color: $caption-color;
+        font-size: 0.8em;
+    }
+}
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 300px;
+    padding: 5px;
+    background-color: $header-desc-background-color;
+    border: 0px;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: 0.8em;
+    color: #fff;
+    text-align: left;
+}
 article,
 .comments {
   @extend %padding-regular;

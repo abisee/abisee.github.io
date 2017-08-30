@@ -19,6 +19,11 @@ layout: default
             {{ post.title }}
           </a>
         </h1>
+        {% if post.subtitle %}
+        <h3>
+          {{ post.subtitle }}
+        </h3>
+        {% endif %}
         <p class="meta">
           {{ post.date | date: "%B %-d, %Y" }}
         </p>
