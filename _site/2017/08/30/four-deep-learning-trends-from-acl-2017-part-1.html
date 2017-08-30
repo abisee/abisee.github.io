@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+	<meta charset="utf-8">
+	<title>Four deep learning trends from ACL 2017 | Abigail See</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- <meta http-equiv="X-Frame-Options" content="sameorigin"> -->
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="/css/main.css">
+
+	<!--Favicon-->
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+	<!-- Canonical -->
+	<link rel="canonical" href="http://localhost:4000/2017/08/30/four-deep-learning-trends-from-acl-2017-part-1.html">
+
+	<!-- RSS -->
+	<link rel="alternate" type="application/atom+xml" title="Abigail See" href="http://localhost:4000/feed.xml" />
+
+	<!-- Font Awesome -->
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<!-- Google Fonts -->
+	
+	<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+	<link href="//fonts.googleapis.com/css?family=Courier:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+	
+
+	<!-- KaTeX -->
+	
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.js"></script>
+	
+
+	<!-- Google Analytics -->
+	
+	<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-97611017-1', 'auto');
+	ga('send', 'pageview');
+	</script>
+	
+</head>
+
+  <body>
+    <header class="site-header">
+	<div class="branding">
+		
+		<h1 class="site-title">
+			<a href="/">Abigail See</a>
+		</h1>
+	</div>
+	<nav class="site-nav">
+		<ul>
+			
+			
+			
+			
+			<li>
+				<a class="page-link" href="/about/">
+					About
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			<!-- Social icons from Font Awesome, if enabled -->
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</ul>
+	</nav>
+</header>
+
+    <div class="content">
+      <article >
+  <header style="background-image: url('/')">
+    <h1 class="title">Four deep learning trends from ACL 2017</h1>
+    
+      <h3 class="subtitle">Part One: Linguistic Structure and Word Embeddings</h3>
+    
+    <p class="meta">
+    August 30, 2017
+    
+    </p>
+  </header>
+  <section class="post-content"><head>
+<script src="http://localhost:4000/js/external/d3.min.js"></script>
+<script src="http://localhost:4000/js/external/jquery-3.1.0.min.js"></script>
+<script src="http://localhost:4000/js/external/underscore-min.js"></script>
+<script src="http://localhost:4000/js/external/sprintf.min.js"></script>
+
+<script>
+
+// Define the div for the tooltip
+var tooltip_div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+function start() {
+  var json_fname = "/bibliography/bibliography.json"
+
+  function json_success(data) {
+    // Displays the data
+    console.log("successfully loaded json file.")
+    var id2data = {}
+    for (var i=0; i<data.length; i++) {
+      var pub = data[i]
+      id2data[pub.id] = pub
+    }
+    add_citations(id2data)
+  }
+
+  function json_fail(d) {
+    console.log("failure to load " + json_fname)
+  }
+
+  $.getJSON(json_fname, json_success).fail(json_fail);
+}
+
+function get_url(key, id2data) {
+  var pub = id2data[key]
+  return pub.url
+}
+
+function get_info(key, id2data) {
+  var pub = id2data[key]
+  var title = pub.title
+  var authors = pub.author
+  var author_string = ""
+  for (var i=0; i<authors.length; i++) {
+    var author = authors[i]
+    author_string += author.given + " " + author.family
+    if (i<authors.length-1) {
+      author_string += ", "
+    }
+  }
+  var venue = pub["short-venue"]
+  var year = pub.issued["date-parts"][0]
+  var html = "<i><b>" + title + ".</b></i><br>" + author_string + ".<br>" + venue + ", " + year + "."
+  return html
+}
+
+function add_citations(id2data) {
+  d3.select("body").selectAll(".citation")
+    .on("mouseover", function() {
+      var key = this.getAttribute("key")
+      var info = get_info(key,id2data)
+      tooltip_div.transition()
+          .duration(200)
+          .style("opacity", 1);
+      tooltip_div.html(info)
+          .style("left", (d3.event.pageX - 150) + "px")
+          .style("top", (d3.event.pageY + 20) + "px");
+      })
+    .on("mouseout", function() {
+      tooltip_div.transition()
+          .duration(200)
+          .style("opacity", 0);
+    });
+}
+
+</script>
+
+</head>
+
+<body onload="start();"></body>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><a href="https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/4?src=clipshare">“NLP is booming”</a>, declared Joakim Nivre at the presidential address of ACL 2017, which I attended in Vancouver earlier this month. As evidenced by the throngs of attendees, interest in NLP is at an all-time high – an increase that is chiefly due to the successes of the deep learning renaissance, which recently swept like a tidal wave over the field.</p>
+
+<p>Beneath the optimism however, I noticed a tangible anxiety at ACL, as one field adjusts to its rapid transformation by another. Researchers asked whether there is anything of the old NLP left – or was it all swept away by the tidal wave? Are neural networks the only technique we need any more? How do we do good science now that experiments are so empirical, papers are immediately on arXiv, and access to GPUs can determine success?</p>
+
+<!-- from here: https://superdevresources.com/image-caption-jekyll/ -->
+<div class="image-wrapper">
+    
+      <img src="http://localhost:4000/img/scream_250h.png" alt="I don't have money for GPUs! Is NLP dead? And language? I really like my features!" />
+    
+    
+        <p class="image-caption">Mirella Lapata</p>
+    
+</div>
+
+<p>Though these difficult questions were at the forefront of the conference (the presidential address even alluded to <a href="https://medium.com/@yoav.goldberg/an-adversarial-review-of-adversarial-generation-of-natural-language-409ac3378bd7">a recent high-profile debate</a> on the subject), the overall mood was positive nonetheless. At ACL 2017, the NLP community continued to enthusiastically embrace deep learning, though with a healthy skepticism. As researchers are starting to reach a clearer view of what works and what doesn’t with current neural methods, there is a growing trend to consult older NLP wisdom to guide and improve those methods. In this post I take a look at what’s happening at this pivotal time for NLP research.</p>
+
+<h2 id="about-this-post">About this post</h2>
+
+<p>In this two-part post, I describe <strong>four broad research trends</strong> that I observed at the conference (and its co-located events) through papers, presentations and discussions. The content is guided entirely by my own research interests; accordingly it’s mostly focused on deep learning, sequence-to-sequence models, and adjacent topics. This first part will explore two inter-related themes: <a href="#structure">linguistic structure</a> and <a href="#word_emb">word representations</a>.</p>
+
+<p><strong>Disclaimer:</strong> This recap is <em>by no means</em> exhaustive, as I did not come close to reading every paper at ACL – consequently I’m sure there are many relevant papers that are not mentioned here. Secondly, I have done my best to accurately understand others’ work, but if I’ve misrepresented any piece of work, let me know. Thirdly, as a person who is fairly new to the field, I may lack a longer perspective on some of these trends. If you have a more historically-informed perspective, I’d be interested to hear it.</p>
+
+<h2 id="trend-1-linguistic-structure-is-back"><a id="structure"></a>Trend 1: Linguistic Structure is Back</h2>
+
+<p>The recent deep learning renaissance has emphasized a simple uniform paradigm for NLP: <em>language is just sequences of words</em>. According to this logic, any further structure is unnecessary – simply train a RNN end-to-end and stochastic gradient descent will figure out the rest! While this approach has rapidly found enormous popularity and success (not least due to the convenience of requiring no feature engineering), its limitations are now becoming more apparent. At ACL 2017, several prominent researchers pushed back against the “language is just sequences” zeitgeist and presented reasons, both practical and principled, why NLP should re-embrace linguistic structure.</p>
+
+<h4 id="reason-1-reduce-the-search-space">Reason 1: Reduce the search space</h4>
+
+<p>In her very entertaining <a href="https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back?ref=https://chairs-blog.acl2017.org/2017/08/06/archiving-your-presentations-and-posters/">keynote talk</a>, Mirella Lapata questioned the hegemony of the RNN sequence-to-sequence framework, <a href="https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back/23?src=clipshare">asking</a> rhetorically whether its dominance means language is dead, and all linguistic features should be discarded. Instead she concluded that <a href="https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back/73?src=clipshare">Structure Is Coming Back</a>, and provided <a href="https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back/74?src=clipshare">via example</a> one reason to embrace its return: <strong>linguistic structure reduces the search space</strong> of possible outputs, making it easier to generate well-formed output.</p>
+
+<p>For example, code generation involves mapping a natural language utterance such as <em>“generate a list of the first 10 square numbers”</em> to a corresponding code snippet, e.g. <em>“[x**2 for x in range(10)]”</em> in Python. This task has been attempted with the standard sequence-to-sequence method, which regards the code as simply a sequence of tokens, rather than its underlying tree structure. This makes the generation task an unconstrained search over the entire output space of all sequences of tokens – a search task that is both daunting and prone to generate ill-formed output (for example, the decoder may generate code with mismatched brackets). In their ACL papers, both <a href="http://www.aclweb.org/anthology/P/P17/P17-1041.pdf" class="citation" key="Yin_2017">Yin and Neubig</a> and <a href="http://www.aclweb.org/anthology/P/P17/P17-1105.pdf" class="citation" key="Rabinovich_2017">Rabinovich et al.</a>  take the structured prediction approach instead, and directly generate the underlying abstract syntax tree. This approach restricts the search space to well-formed trees only, eliminating ill-formed output and making the search problem more manageable.</p>
+
+<p>Though linguistic structure has obvious benefits for tasks with highly-formalized output such as code generation and semantic parsing, it can also help reduce the search space for less obvious tasks, like cloze-style reading comprehension. By observing that the correct answer is almost always a constituent in the source document’s parse tree, <a href="http://www.aclweb.org/anthology/P/P17/P17-1129.pdf" class="citation" key="Xie_2017">Xie and Xing</a>  construct a system that explores only those nodes – they argue this is both easier and more effective than exploring all possible spans in the document.</p>
+
+<h4 id="reason-2-linguistic-scaffolding">Reason 2: Linguistic scaffolding</h4>
+
+<!-- from here: https://superdevresources.com/image-caption-jekyll/ -->
+<div class="image-wrapper">
+    
+      <img src="http://localhost:4000/img/squash.png" alt="Who wants an all-squash diet?" />
+    
+    
+        <p class="image-caption">Noah Smith</p>
+    
+</div>
+
+<p>In his <a href="https://www.slideshare.net/aclanthology/noah-a-smith-2017-squashing-computational-linguistics?ref=https://chairs-blog.acl2017.org/2017/08/06/archiving-your-presentations-and-posters/">keynote talk</a>, Noah Smith argued against what he calls the “all-squash diet” – the use of linear transformations + squashing functions (a.k.a. neural networks) as the sole model for NLP. Instead he encouraged the NLP community to think about our models’ <em>inductive biases</em> – that is, the models’ underlying assumptions and how those assumptions affect what they learn.</p>
+
+<p>In particular, Smith highlighted the power of <strong>multi-task learning</strong> as a way to incorporate a desirable inductive bias. It is well-known that jointly learning a linguistic scaffolding task (such as syntactic parsing) with the main task (such as machine translation) tends to boost the performance of the main task – most likely because the main task is enriched by the useful information contained in the low-level shared representations. ACL saw several papers successfully take this approach – in particular <a href="http://www.aclweb.org/anthology/P/P17/P17-2012.pdf" class="citation" key="Eriguchi_2017">Eriguchi et al.</a> and <a href="http://www.aclweb.org/anthology/P/P17/P17-1065.pdf" class="citation" key="Wu_2017">Wu et al.</a> designed new hybrid decoders for NMT that use shift-reduce algorithms to simultaneously generate and parse the target sequence.</p>
+
+<p>These joint NMT+parsing systems, which seem to outperform sequence-to-sequence systems, may also benefit from Reason 1 (reducing the search space). As has been <a href="http://aclweb.org/anthology/W/W17/W17-3204.pdf" class="citation" key="Koehn_2017">noted</a>, NMT performance is poor for long sentences, and (counter-intuitively) larger beam sizes can sometimes <em>degrade</em> performance further. If widening the search beam causes a drop in performance, this implies that our current methods have difficulty identifying the best output when there are more candidates to choose from. Jointly parsing the output may eliminate poor-quality outputs from the search beam, thus allowing beam search to choose between better-quality candidates.</p>
+
+<h4 id="reason-3-syntactic-recency--sequential-recency">Reason 3: Syntactic recency &gt; sequential recency</h4>
+
+<p>Chris Dyer also argued for the importance of incorporating linguistic structure into deep learning in his CoNLL keynote <a href="http://www.conll.org/keynotes-2017"><em>Should Neural Network Architecture Reflect Linguistic Structure?</em></a> Like Noah Smith, he drew attention to the inductive biases inherent in the sequential approach, <a href="https://twitter.com/boknilev/status/893145262473924608">arguing that</a> RNNs have an inductive bias towards <em>sequential recency</em>, while syntax-guided hierarchical architectures (such as recursive NNs and RNNGs) have an inductive bias towards <em>syntactic recency</em>. Asserting that language is inherently hierarchical, Dyer concluded that <strong>syntactic recency is a preferable inductive bias to sequential recency</strong>.</p>
+
+<p>At ACL, several papers noted the apparent inability of RNNs to capture long-range dependencies, and obtained improvements using recursive models instead. For example, in <a href="http://www.aclweb.org/anthology/P/P17/P17-1177.pdf" class="citation" key="Chen_2017"><em>Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder</em></a>, Chen et al. find that using a recursive encoder improves performance overall, and the improvement is greater for longer sentences. The latter may be evidence of the benefit of syntactic recency, which can capture long-term dependencies more easily than sequential recency.</p>
+
+<!-- from here: https://superdevresources.com/image-caption-jekyll/ -->
+<div class="image-wrapper">
+    
+      <img src="http://localhost:4000/img/syntactic_recency_200h.png" alt="Syntax tree with long-distance dependency indicated." />
+    
+    
+        <p class="image-caption">This example from Wu et al. shows the difference between syntactic recency (red dotted line) and sequential recency.</p>
+    
+</div>
+
+<h4 id="looking-forward">Looking forward</h4>
+
+<p>Though linguistic structure is making a comeback, some barriers remain. Multi-task learning is cumbersome to implement. Non-sequential architectures are harder to parallelize on GPUs (however <a href="https://github.com/clab/dynet">new dynamic libraries</a> provide easier and more efficient implementations). Supervised learning of structured prediction tasks can be hindered by a lack of parallel data. Fortunately, the resurgence of Reinforcement Learning is well-timed; at ACL 2017 both <a href="http://www.aclweb.org/anthology/P/P17/P17-1003.pdf" class="citation" key="Liang_2017">Liang et al.</a> and <a href="http://www.aclweb.org/anthology/P/P17/P17-1167.pdf" class="citation" key="Iyyer_2017">Iyyer et al.</a> use weak supervision to perform question answering via semantic parsing, without access to the parses themselves.</p>
+
+<p>Despite these barriers, I think the NLP community will continue to (re-)embrace linguistic structure as its benefits become more apparent. While the “language is just sequences” paradigm argues that RNNs <em>can</em> compute anything, researchers are increasingly interested in how the inductive biases of the sequential model affect what they <em>do</em> compute. On this matter, it seems that a little linguistic structure can go a long way.</p>
+
+<h2 id="-trend-2-reconsidering-word-embeddings"><a id="word_emb"></a> Trend 2: Reconsidering Word Embeddings</h2>
+
+<p>The number of papers with “word embedding” in the title fell from ten to four this year, perhaps in part due to a shift towards sub-word-level representations (more on that below). Nonetheless, word embeddings remain a standard technique, and the papers at ACL this year were very interesting – perhaps precisely <em>because</em> word embeddings have passed through the “hype” stage and into the “thoughtful scrutiny” stage. These papers probed the boundaries of how word embeddings succeed and fail, what they do and don’t capture, and how to improve on their weaknesses.</p>
+
+<h4 id="better-understanding-word-embeddings">Better understanding word embeddings</h4>
+
+<p>Perhaps the most famous and surprising (but often-exaggerated) success of word embeddings is their <strong>additive compositional structure</strong>, as evidenced by word analogies. The cryptically-titled <a href="http://www.aclweb.org/anthology/P/P17/P17-1007.pdf" class="citation" key="Gittens_2017"><em>Skip-Gram – Zipf + Uniform = Vector Additivity</em></a> aims to explain this success. The authors prove that distributional word embeddings trained with the skip-gram model have additive structure under certain assumptions – most notably that the words are uniformly distributed (this is the meaning of <em>“– Zipf + Uniform”</em>). Though training corpora are not uniformly distributed, this result may go some way to explain the additivity of word embeddings.</p>
+
+<p>Other papers investigated the <strong>limitations of the distributional assumption</strong> at the heart of word embeddings. Li and Gauthier ask <a href="http://www.aclweb.org/anthology/W/W17/W17-2810.pdf" class="citation" key="Lucy_2017"><em>Are distributional representations ready for the real world?</em></a>, and find that while word embeddings capture certain <em>conceptual</em> features such as “is edible”, and “is a tool”, they do not tend to capture <em>perceptual</em> features such as “is chewy” and “is curved” – potentially because the latter are not easily inferred from distributional semantics alone. The paper joins a growing call for grounded learning, as evidenced by the founding of a new workshop on <a href="https://robonlp2017.github.io/">Language Grounding for Robotics</a>.</p>
+
+<p>Another, more glaring baked-in problem of word embeddings is that they do not account for <strong>polysemy</strong>, instead assigning exactly one vector per surface form. In one approach to this problem, <a href="http://aclweb.org/anthology/W/W17/W17-2613.pdf" class="citation" key="Upadhyay_2017">Upadhyay et al.</a> leverage multi-lingual parallel data to learn multi-sense word embeddings – for example, seeing the English word <em>bank</em> translated to both the French words <em>banc</em> and <em>banque</em> is evidence that <em>bank</em> is polysemous, and helps disentangle its two meanings. In <a href="http://www.aclweb.org/anthology/P/P17/P17-1151.pdf" class="citation" key="Athiwaratkun_2017"><em>Multimodal Word Distributions</em></a>, Athiwaratkun and Wilson represent words not by single vectors, but by Gaussian probability distributions with multiple modes – thus capturing both uncertainty and polysemy. The paper has a very impressive <a href="http://35.161.153.223:6003/">Tensorboard demo</a>: go to the “Embeddings” tab and search for a polysemous word like “zip”. you should find that the three modes are clustered with related words from the three different senses (zip code, clothes zip and zipped file).</p>
+
+<!-- from here: https://superdevresources.com/image-caption-jekyll/ -->
+<div class="image-wrapper">
+    
+      <img src="http://localhost:4000/img/zip.png" alt="The three senses of 'zip' with their different word clusters" />
+    
+    
+        <p class="image-caption">Athiwaratkun et al.</p>
+    
+</div>
+
+<h4 id="going-sub-word">Going sub-word</h4>
+
+<p>Arguably the most urgent limitation of standard word embeddings is their <strong>blindness to morphological information</strong>, instead treating each surface form as a separate, anonymous unit. This can cause problems like an inability to recognize that two words (e.g. <em>speaker</em> and <em>speaking</em>) have the same lemma (<em>speak</em>) and are therefore highly related. This is the main reason for the recent shift away from word embeddings and towards sub-word representations, such as characters, character n-grams, and word pieces. These representations had a strong showing at ACL 2017, comparing favorably to word embeddings on both intrinsic tasks like <a href="http://www.aclweb.org/anthology/Q/Q17/Q17-1010.pdf" class="citation" key="Bojanowski_2017">word similarity and analogies</a> as well as extrinsic tasks like <a href="https://arxiv.org/pdf/1610.03017.pdf" class="citation" key="Lee_2017">Machine Translation</a>, <a href="http://www.aclweb.org/anthology/P/P17/P17-1137.pdf" class="citation" key="Kawakami_2017">Language Modeling</a> and <a href="http://www.aclweb.org/anthology/P/P17/P17-2106.pdf" class="citation" key="Yu_2017">dependency parsing</a>. For logographic languages like Chinese/Japanese/Korean, the meaning of a character can be <a href="http://www.aclweb.org/anthology/P/P17/P17-1188.pdf" class="citation" key="Liu_2017">composed from the visual features</a> of its component parts.</p>
+
+<!-- from here: https://superdevresources.com/image-caption-jekyll/ -->
+<div class="image-wrapper">
+    
+      <img src="http://localhost:4000/img/characters_250h.png" alt="Different characters with similar parts highlighted" />
+    
+    
+        <p class="image-caption">Liu et al.</p>
+    
+</div>
+
+<p>With these sub-word representations, and in particular the character-CNN emerging as a potential new standard, <strong>is morphology solved</strong>? At least two papers gave a resounding “no”. <a href="http://www.aclweb.org/anthology/P/P17/P17-1184.pdf" class="citation" key="Vania_2017">Vania and Lopez</a> compared the language modeling performance of several sub-word compositional representations, and found that none of them perform as well as a model that has access to gold morphological annotations. This result held even when providing the raw input model with ten times the training data – suggesting that at best, our current language modeling methods require a very large amount of data to implicitly learn morphology, and at worst, no amount of training data can replace morphological understanding. In <a href="http://www.aclweb.org/anthology/P/P17/P17-1080.pdf" class="citation" key="Belinkov_2017"><em>What do Neural Machine Translation Models Learn about Morphology?</em></a>, Belinkov et al. show that while character-based NMT representations are better than word-based representations both for NMT and morphological tagging, they have far from perfect performance on the latter.</p>
+
+<p>These results suggest that, if we want truly morphologically-aware word representations, we may need <strong>a more explicit model of morphology</strong> than just character composition. In their <a href="http://www.aclweb.org/anthology/P/P17/P17-1006.pdf" class="citation" key="Vuli__2017"><em>Morph-fitting</em></a> paper, Vulić et al. fine-tune word embeddings by using some very simple morphological rules written by non-linguists (e.g., in English the prefix <em>un-</em> indicates an antonym). This results in substantial improvements, showing that even a modicum of linguistic knowledge can be very effective. Meanwhile, <a href="https://arxiv.org/pdf/1701.00946.pdf" class="citation" key="Cotterell_2017">Cotterell and Schütze</a> present a more comprehensive model of morphology, jointly learning a system that can both segment a word into its morphological components (e.g. <em>questionably</em> → <em>question+able+ly</em>) and compose the component representations back into the word representation. I think this is a very worthwhile approach, as any morphological understanding system must be able to compose and decompose meaning. Though the model performs well on the intrinsic evaluation tasks, I’d be interested to see how easily and how successfully it transfers to extrinsic tasks such as syntactic parsing or language modeling.</p>
+
+<!-- from here: https://superdevresources.com/image-caption-jekyll/ -->
+<div class="image-wrapper">
+    
+      <img src="http://localhost:4000/img/compositional_250h.png" alt="The word embedding is be composed from the embeddings of its morphological parts" />
+    
+    
+        <p class="image-caption">Cotterell and Schütze</p>
+    
+</div>
+
+<h4 id="looking-forward-1">Looking forward</h4>
+
+<p>Words are the very basis of language, so our assumptions matter when we choose how to model them.</p>
+
+<p>Though distributional semantics has served us well so far, words are more than the contexts in which they appear. In the coming years I think we will see more grounded, visual and interactive language learning to complement distributional representations.</p>
+
+<p>Like the <em>“language is just sequences of words”</em> assumption, <em>“words are just anonymous tokens”</em> seems to be on its way out. However, I expect the question of <em>“words are just sequences of characters”</em> vs. <em>“morphological structure is important”</em> will be a matter of future debate, both philosophical and practical.</p>
+
+<hr />
+
+<h4 id="next-time">Next time</h4>
+<p>If you’ve enjoyed this post, check out <a href="/2017/08/30/four-deep-learning-trends-from-acl-2017-part-2.html">Part Two</a>, in which I discuss interpretability and attention, and find that neither are as easy to define as we think they might be.</p>
+</section>
+</article>
+
+<!-- Post navigation -->
+
+
+<!-- Disqus -->
+
+<div class="comments">
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+	var disqus_shortname = 'abigailsee-com';
+	(function() {
+		var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+<!-- Muut -->
+
+
+    </div>
+    
+<script src="/js/katex_init.js"></script>
+
+
+
+<footer class="site-footer">
+	<p class="text">Powered by <a href="http://jekyllrb.com">Jekyll</a> with <a href="https://rohanchandra.github.io/project/type/">Type Theme</a>
+</p>
+</footer>
+
+
+  </body>
+</html>

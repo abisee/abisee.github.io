@@ -5,98 +5,882 @@
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
     <link>http://localhost:4000/</link>
     <description></description>
-    <pubDate>Tue, 11 Apr 2017 22:46:55 -0700</pubDate>
+    <pubDate>Wed, 30 Aug 2017 09:14:23 -0700</pubDate>
     
       <item>
-        <title>Sample post</title>
-        <link>http://localhost:4000/2014/11/30/sample-post.html</link>
-        <guid isPermaLink="true">http://localhost:4000/2014/11/30/sample-post.html</guid>
-        <description>&lt;p&gt;Consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem.&lt;/p&gt;
+        <title>Four deep learning trends from ACL 2017</title>
+        <link>http://localhost:4000/2017/08/30/four-deep-learning-trends-from-acl-2017-part-2.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/08/30/four-deep-learning-trends-from-acl-2017-part-2.html</guid>
+        <description>&lt;head&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/d3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/jquery-3.1.0.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/underscore-min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/sprintf.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+
+// Define the div for the tooltip
+var tooltip_div = d3.select(&quot;body&quot;).append(&quot;div&quot;)
+    .attr(&quot;class&quot;, &quot;tooltip&quot;)
+    .style(&quot;opacity&quot;, 0);
+
+function start() {
+  var json_fname = &quot;/bibliography/bibliography.json&quot;
+
+  function json_success(data) {
+    // Displays the data
+    console.log(&quot;successfully loaded json file.&quot;)
+    var id2data = {}
+    for (var i=0; i&lt;data.length; i++) {
+      var pub = data[i]
+      id2data[pub.id] = pub
+    }
+    add_citations(id2data)
+  }
+
+  function json_fail(d) {
+    console.log(&quot;failure to load &quot; + json_fname)
+  }
+
+  $.getJSON(json_fname, json_success).fail(json_fail);
+}
+
+function get_url(key, id2data) {
+  var pub = id2data[key]
+  return pub.url
+}
+
+function get_info(key, id2data) {
+  var pub = id2data[key]
+  var title = pub.title
+  var authors = pub.author
+  var author_string = &quot;&quot;
+  for (var i=0; i&lt;authors.length; i++) {
+    var author = authors[i]
+    author_string += author.given + &quot; &quot; + author.family
+    if (i&lt;authors.length-1) {
+      author_string += &quot;, &quot;
+    }
+  }
+  var venue = pub[&quot;short-venue&quot;]
+  var year = pub.issued[&quot;date-parts&quot;][0]
+  var html = &quot;&lt;i&gt;&lt;b&gt;&quot; + title + &quot;.&lt;/b&gt;&lt;/i&gt;&lt;br&gt;&quot; + author_string + &quot;.&lt;br&gt;&quot; + venue + &quot;, &quot; + year + &quot;.&quot;
+  return html
+}
+
+function add_citations(id2data) {
+  d3.select(&quot;body&quot;).selectAll(&quot;.citation&quot;)
+    .on(&quot;mouseover&quot;, function() {
+      var key = this.getAttribute(&quot;key&quot;)
+      var info = get_info(key,id2data)
+      tooltip_div.transition()
+          .duration(200)
+          .style(&quot;opacity&quot;, 1);
+      tooltip_div.html(info)
+          .style(&quot;left&quot;, (d3.event.pageX - 150) + &quot;px&quot;)
+          .style(&quot;top&quot;, (d3.event.pageY + 20) + &quot;px&quot;);
+      })
+    .on(&quot;mouseout&quot;, function() {
+      tooltip_div.transition()
+          .duration(200)
+          .style(&quot;opacity&quot;, 0);
+    });
+}
+
+&lt;/script&gt;
+
+&lt;/head&gt;
+
+&lt;body onload=&quot;start();&quot;&gt;&lt;/body&gt;
+
+&lt;p&gt;This is the second of a two-part post in which I describe &lt;strong&gt;four broad research trends&lt;/strong&gt; that I observed at ACL 2017. In &lt;a href=&quot;/2017/08/30/four-deep-learning-trends-from-acl-2017-part-1.html&quot;&gt;Part One&lt;/a&gt; I explored the shifting assumptions we make about language, both at the sentence and the word level, and how these shifts are prompting both a comeback of linguistic structure and a re-evaluation of word embeddings.&lt;/p&gt;
+
+&lt;p&gt;In this part, I will discuss two more very inter-related themes: &lt;a href=&quot;#interpretability&quot;&gt;interpretability&lt;/a&gt; and &lt;a href=&quot;#attention&quot;&gt;attention&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;-trend-3-interpretability&quot;&gt;&lt;a id=&quot;interpretability&quot;&gt;&lt;/a&gt; Trend 3: Interpretability&lt;/h2&gt;
+
+&lt;p&gt;I’ve been thinking about interpretability recently, and I’m not alone – among deep learning practitioners, the dreaded “black box” quality of neural networks makes them notoriously hard to control, hard to debug and thus hard to develop. From a non-researcher perspective however, there is an even more important reason to desire interpretability: &lt;strong&gt;trust&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/black_box_300h.jpg&quot; alt=&quot;A sinister black box hovering over a spike&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;One of many unsettling images used to depict AI in the media. By Keith Rankin.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;The public, the media and some researchers are expressing &lt;a href=&quot;https://www.technologyreview.com/s/604087/the-dark-secret-at-the-heart-of-ai/&quot;&gt;increased anxiety&lt;/a&gt; about whether AI can be trusted if it cannot be understood. While some of these anxieties are ill-founded (see the &lt;a href=&quot;http://gizmodo.com/no-facebook-did-not-panic-and-shut-down-an-ai-program-1797414922&quot;&gt;“Facebook chatbots invent their own language”&lt;/a&gt; story), others are very real. For example, if AI systems absorb &lt;a href=&quot;http://www.wired.co.uk/article/machine-learning-bias-prejudice&quot;&gt;unwanted biases&lt;/a&gt; present in their training data, but we are unable to check the system for those biases, then we have a recipe for &lt;a href=&quot;https://qz.com/653084/microsofts-disastrous-tay-experiment-shows-the-hidden-dangers-of-ai/&quot;&gt;disaster&lt;/a&gt;. Second, as AI systems are imperfect and &lt;a href=&quot;http://www.techrepublic.com/article/top-10-ai-failures-of-2016/&quot;&gt;sometimes fail&lt;/a&gt;, then we must be able to check how they make their decisions – especially for more complex tasks. Third, even if AI systems operate perfectly, humans may always need the reassurance of explanation.&lt;/p&gt;
+
+&lt;p&gt;Even among researchers, “interpretability” can have many possible definitions – for an exploration of those definitions I highly recommend Zachary Lipton’s essay &lt;a href=&quot;https://arxiv.org/pdf/1606.03490.pdf&quot; class=&quot;citation&quot; key=&quot;Lipton_2016&quot;&gt;&lt;em&gt;The Mythos of Model Interpretability&lt;/em&gt;&lt;/a&gt;. In particular, Lipton identifies &lt;strong&gt;two broad approaches to interpretability&lt;/strong&gt;: &lt;em&gt;post-hoc explanations&lt;/em&gt; and &lt;em&gt;transparency&lt;/em&gt;. Post-hoc explanations take a learned model and draw some kind of useful insights from it; typically these insights provide only a partial or indirect explanation of how the model works. Transparency asks more directly “how does the model work?” and seeks to provide some way to understand the core mechanisms of the model itself. I think this is a useful distinction, so I’ll use it to explore the following ACL work.&lt;/p&gt;
+
+&lt;h4 id=&quot;post-hoc-explainability&quot;&gt;Post-hoc explainability&lt;/h4&gt;
+
+&lt;p&gt;At ACL, I saw many papers presenting a variety of creative methods to gain post-hoc insights into neural systems.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Visualization&lt;/strong&gt; is probably the most common type of post-hoc interpretability, with particular types of visualizations – such as saliency maps and 2D projections of word embeddings – becoming standard. These visualizations are certainly useful (and I’m always grateful to see them in a paper), but they &lt;a href=&quot;https://distill.pub/2016/misread-tsne/&quot;&gt;can be misleading&lt;/a&gt; if read incorrectly. In &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1106.pdf&quot; class=&quot;citation&quot; key=&quot;Ding_2017&quot;&gt;&lt;em&gt;Visualizing and Understanding Neural Machine Translation&lt;/em&gt;&lt;/a&gt;, Ding et al. compute relevance scores that quantify how much a particular neuron or hidden state contributes to another neuron or hidden state. At first glance, the visualizations provided in the paper (which essentially give an importance score to each hidden state and its associated token) look very similar to the visualizations commonly produced from the attention distribution. However, the method of computation is very different. The relevance scores are a direct measure of how much one neuron affects a downstream neuron, calculated post-hoc on the trained model. By contrast the attention distribution is learned and computed by the network itself; it is an intermediate representation that affects the rest of the computation in complex ways. Though attention often plays the role of word alignment in NMT, it learns to play &lt;a href=&quot;http://aclweb.org/anthology/W/W17/W17-3204.pdf&quot; class=&quot;citation&quot; key=&quot;Koehn_2017&quot;&gt;other, harder-to-understand roles too&lt;/a&gt;; thus it is not always as understandable as we might hope. Ding et al.’s relevance scores provide a useful alternative way to measure word-level relevance in sequence-to-sequence models.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/attn_off_by_one_350h.png&quot; alt=&quot;A visualization of the attention distribution, in which it's one step shifted from expected word alignment&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Koehn and Knowles show attention is sometimes off-by-one from word alignment. How should we interpret this behavior?&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Transfer learning&lt;/strong&gt; is another popular post-hoc analysis technique, in which the representations learned for task A (typically a high-level task) are applied to task B (typically a lower-level task). The degree of success at task B indicates how much the task A model has learned about task B. At ACL 2017, researchers asked what &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1080.pdf&quot; class=&quot;citation&quot; key=&quot;Belinkov_2017&quot;&gt;NMT models know about morphology&lt;/a&gt;, what &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1161.pdf&quot; class=&quot;citation&quot; key=&quot;Peters_2017&quot;&gt;Language Models know about NER and chunking&lt;/a&gt;, and what &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1057.pdf&quot; class=&quot;citation&quot; key=&quot;Chrupa_a_2017&quot;&gt;speech+vision representations know about various semantic tasks&lt;/a&gt;. These studies, which are often carefully repeated with different layers and various configurations of the task A model, can yield useful and unexpected insights that guide the development of better models for task A. For example, in &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1080.pdf&quot; class=&quot;citation&quot; key=&quot;Belinkov_2017&quot;&gt;&lt;em&gt;What do Neural Machine Translation Models Learn about Morphology?&lt;/em&gt;&lt;/a&gt; Belinkov et al. find that while attention &lt;em&gt;increases&lt;/em&gt; the quality of morphological information in the &lt;em&gt;encoder&lt;/em&gt; representations, it &lt;em&gt;decreases&lt;/em&gt; the quality for the &lt;em&gt;decoder&lt;/em&gt; representations. I was surprised to read about this unintended side-effect of attention, and overall I really like how the paper thoughtfully and thoroughly addresses its research questions.&lt;/p&gt;
+
+&lt;p&gt;Though transfer learning and attention-like visualizations can tell you “how much”, they do not tell you “what” or “why”. To answer the latter, some researchers directly &lt;strong&gt;study the geometry&lt;/strong&gt; of the representation spaces themselves. In &lt;a href=&quot;http://aclweb.org/anthology/W/W17/W17-2604.pdf&quot; class=&quot;citation&quot; key=&quot;Wang_2017&quot;&gt;&lt;em&gt;Emergent Predication Structure in Hidden State Vectors of Neural Readers&lt;/em&gt;&lt;/a&gt;, Wang et al. provide evidence that in RNN-based reading comprehension models, the hidden vector space can be decomposed into two orthogonal subspaces: one containing representations of entities, and the other containing representations of statements (or predicates) about those entities. Though it is not a focus of the paper, I wonder whether these component parts of the hidden state could be further interpreted. In &lt;a href=&quot;http://aclweb.org/anthology/W/W17/W17-2404.pdf&quot; class=&quot;citation&quot; key=&quot;Trost_2017&quot;&gt;&lt;em&gt;Parameter Free Hierarchical Graph-Based Clustering for Analyzing Continuous Word Embeddings&lt;/em&gt;&lt;/a&gt;, Trost and Klakow perform clustering on word embeddings, then cluster those clusters, and so on to obtain a hierarchical tree-like structure. Judging by the examples provided in the paper, the hierarchy could provide a more human-readable way to explore the neighborhood structure of word embeddings.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/word_hierarchy.png&quot; alt=&quot;A graph showing the hierarchy of words below 'dropped'&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Trost and Klakow&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;Another approach to direct post-hoc interpretation is to treat interpretation itself as a &lt;strong&gt;translation task&lt;/strong&gt;. In &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1022.pdf&quot; class=&quot;citation&quot; key=&quot;Andreas_2017&quot;&gt;&lt;em&gt;Translating Neuralese&lt;/em&gt;&lt;/a&gt;, Andreas et al. take the vector messages (“neuralese”) passed between two machines trained to perform a collaborative task, and translate them into natural language utterances. To overcome the absence of neuralese-to-English parallel data, Andreas et al. consider a pair of messages equivalent if they are used in similar scenarios by human and machine agents. The authors raise important questions about whether these translations can be trusted. What happens if the neuralese messages encode concepts that are impossible to capture in English? If humans and machines have different biases about what they choose to communicate, how can we be sure that crowdsourced training data contains English examples that correspond to the neuralese? In any case, this was one of my favorite papers of the conference, and I’m excited to see where this research goes next.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/neuralese_350h.png&quot; alt=&quot;English translations of messages passed in various scenarios&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Andreas et al.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;h4 id=&quot;transparency&quot;&gt;Transparency&lt;/h4&gt;
+
+&lt;p&gt;Despite all the work gleaning post-hoc insight from uninterpretable neural models, &lt;a href=&quot;https://twitter.com/tallinzen/status/893261967074369538&quot;&gt;some researchers argue that&lt;/a&gt; (notwithstanding finding the odd &lt;a href=&quot;https://blog.openai.com/unsupervised-sentiment-neuron/&quot;&gt;sentiment neuron&lt;/a&gt;) staring into the neurons will only get us so far. True interpretability requires &lt;em&gt;transparency&lt;/em&gt; – models that are constructed and trained to be interpretable in themselves.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Linguistically-structured representations&lt;/strong&gt; are by definition more interpretable than unstructured ones – thus Trend 1 (structure is back) could also be viewed as a move towards more transparent neural models. However, a core challenge with these, and other attempts to create transparent neural models is the tension between discreteness and continuousness. Neural networks are powerful because they can learn arbitrary continuous representations, but humans find discrete information – like language itself – easier to understand.&lt;/p&gt;
+
+&lt;p&gt;We might be concerned that imposing discreteness constraints on our neural models diminishes their expressive power – that interpretability comes at the price of effectiveness. However, for some types of discreteness, like &lt;strong&gt;sparsity&lt;/strong&gt;, the opposite can be true. For example, sparsity-inducing regularization is known to improve rather than impair neural models, and sparsified word embeddings can be more effective than the original dense ones. In &lt;a href=&quot;https://www.transacl.org/ojs/index.php/tacl/article/view/1063/241&quot; class=&quot;citation&quot; key=&quot;Berend_2017&quot;&gt;&lt;em&gt;Sparse Coding of Neural Word Embeddings for Multilingual Sequence Labeling&lt;/em&gt;&lt;/a&gt;, Gábor Berend demonstrates the effectiveness of sparse word embeddings for NER and POS-tagging, particularly in low-training-data settings. Though interpretability is not the focus of Berend’s paper, he kindly answered my questions on the subject and even wrote a follow-up &lt;a href=&quot;https://begab.github.io/interpretability-of-sparse-reps&quot;&gt;blog post&lt;/a&gt;, which shows that some of the basis vectors in the sparse representation seem to correspond to human-understandable concepts. This is very cool, and raises the question: if we have high-performing word embeddings with interpretable dimensions, can we use them to build more complex neural systems that are also interpretable?&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/sparse_basis_200h.png&quot; alt=&quot;Closest concepts for several basis vectors.&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Gábor Berend&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;For AI systems that compute answers to complicated questions, transparency is especially important if humans are to trust the answers. These systems should ideally produce a &lt;strong&gt;proof or derivation&lt;/strong&gt; of the answer – for a semantic parsing question answering system, this might be the semantic parse itself, or a relevant excerpt from the knowledge base. For a system that solves mathematical problems, the proof should be a step-by-step natural language derivation of the final answer. This is exactly what Ling et al. provide in &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1015.pdf&quot; class=&quot;citation&quot; key=&quot;Ling_2017&quot;&gt;&lt;em&gt;Program Induction for Rationale Generation: Learning to Solve and Explain Algebraic Word Problems&lt;/em&gt;&lt;/a&gt;. Rather than directly and uninterpretably producing the final answer, their system jointly learns to generate the underlying sequence of mathematical transformations, and the natural language solution that explains it.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/rationale_350h.png&quot; alt=&quot;Rationale and corresponding chain of mathematical computations to solve a mathematical word problem&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Ling et al.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;h4 id=&quot;looking-forward&quot;&gt;Looking forward&lt;/h4&gt;
+
+&lt;p&gt;I’m unsure which type of interpretability – &lt;em&gt;post hoc explainability&lt;/em&gt; or &lt;em&gt;transparency&lt;/em&gt; – is the right way forward. Post hoc techniques tend to give restricted explanations that, while fascinating, but are often cryptic themselves. I think that more flexible explanation techniques, like the translation-based approach, hold a lot of potential – though they raise tough new questions about trust. Transparency, on the other hand, is attractive because interpretability should really be a design choice, not an afterthought. Though we are far from building neural systems that are transparent end-to-end, efforts to make small parts of the system transparent are hugely useful – note, for example, how useful the attention mechanism has been as a sanity check and debugging tool for developing attentional systems. Which leads us to Trend 4…&lt;/p&gt;
+
+&lt;h2 id=&quot;-trend-4-attention&quot;&gt;&lt;a id=&quot;attention&quot;&gt;&lt;/a&gt; Trend 4: Attention&lt;/h2&gt;
+
+&lt;p&gt;Widely acknowledged as a game-changer for the sequence-to-sequence model, the &lt;a href=&quot;https://distill.pub/2016/augmented-rnns/&quot;&gt;attention mechanism&lt;/a&gt; is quickly becoming a favorite technique, and it’s easy to see why. It can be used to bypass bottlenecks in information flow, it enables a key-value lookup function that can’t be achieved with feed-forward layers, and it provides some much-needed interpretability. The attention mechanism had an increased presence at ACL this year, with fifteen occurrences of “attention” in paper titles (an increase from nine the previous year).&lt;/p&gt;
+
+&lt;h4 id=&quot;more-attention-everywhere&quot;&gt;More attention everywhere&lt;/h4&gt;
+
+&lt;p&gt;The attention mechanism is the most interpretable and therefore most manipulable part of the sequence-to-sequence framework. Accordingly, researchers are finding success by designing &lt;strong&gt;increasingly complex attention models&lt;/strong&gt; that aim to solve particular task-specific problems. This “mini-industry of model extensions” (as described by Alexander Rush in his &lt;a href=&quot;http://nlp.seas.harvard.edu/slides/nmt17.pdf&quot;&gt;NMT workshop keynote&lt;/a&gt;) was thriving at ACL 2017.&lt;/p&gt;
+
+&lt;p&gt;Three papers presented models for Question Answering that, in addition to the usual question-to-document attention, add document-to-question attention. Of these models (&lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1055.pdf&quot; class=&quot;citation&quot; key=&quot;Cui_2017&quot;&gt;attention-over-attention&lt;/a&gt;, &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1021.pdf&quot; class=&quot;citation&quot; key=&quot;Hao_2017&quot;&gt;cross-attention&lt;/a&gt; and &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1168.pdf&quot; class=&quot;citation&quot; key=&quot;Dhingra_2017&quot;&gt;gated-attention reader&lt;/a&gt;), the third also incorporates &lt;strong&gt;multi-hop attention&lt;/strong&gt;, which allows the model to iteratively attend to different sections before coming to an answer. This seems like a core ability, and the appendix of the paper contains several examples that demonstrate both the necessity and the effectiveness of multi-hop reasoning.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/multihop_attention_300h.png&quot; alt=&quot;Attention visualizations for each iteration of computation&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Over multiple iterations, attention settles on the correct answer. Dhingra et al.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;Attention has also emerged as the standard way to weight and combine information from &lt;strong&gt;multiple, potentially multi-modal, sources&lt;/strong&gt;. &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-2031.pdf&quot; class=&quot;citation&quot; key=&quot;Libovick__2017&quot;&gt;Libovicky et al.&lt;/a&gt; attend to both text and an image to translate a caption, &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1004.pdf&quot; class=&quot;citation&quot; key=&quot;Lin_2017&quot;&gt;Lin et al.&lt;/a&gt; attend to multi-lingual data to extract relations, and &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1060.pdf&quot; class=&quot;citation&quot; key=&quot;Kim_2017&quot;&gt;Kim et al.&lt;/a&gt; attend to the representations from an ensemble of domain experts to perform domain adaptation on a case-by-case basis. Attention is convenient in these cases because it offers a general way to obtain a fixed-size representation from an arbitrary number of sources.&lt;/p&gt;
+
+&lt;p&gt;Others find that applying &lt;strong&gt;attention at multiple granularities&lt;/strong&gt; is useful for certain tasks. For example, grammatical error correction requires &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1070.pdf&quot; class=&quot;citation&quot; key=&quot;Ji_2017&quot;&gt;nested attention&lt;/a&gt;: word-level attention to detect word order errors, and character-level attention to detect spelling errors.&lt;/p&gt;
+
+&lt;h4 id=&quot;so-is-attention-all-you-need&quot;&gt;So is attention all you need?&lt;/h4&gt;
+
+&lt;p&gt;The enthusiasm for increasingly complex, attention&lt;sup&gt;attention&lt;/sup&gt; mechanisms may seem to confirm recent bold claims that &lt;a href=&quot;https://arxiv.org/pdf/1706.03762.pdf&quot; class=&quot;citation&quot; key=&quot;Vaswani_2017&quot;&gt;attention is all you need&lt;/a&gt;. However, at ACL I noticed several researchers deliver cautionary messages about the potential pitfalls or misapplications of attention.&lt;/p&gt;
+
+&lt;p&gt;For example, there are some scenarios in which attention &lt;strong&gt;doesn’t work as well&lt;/strong&gt; as we might hope. &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1108.pdf&quot; class=&quot;citation&quot; key=&quot;Tan_2017&quot;&gt;Tan et al.&lt;/a&gt; argue that for abstractive document summarization, the attention distribution does not effectively model the saliency of source sentences. Instead, they find more success by using a pre-deep-learning extractive summarization algorithm (PageRank-based sentence ranking) to model saliency. This result serves as an important reminder that we should not throw away decades of accumulated NLP knowledge – though unfashionable, these techniques may provide the key to improving our neural systems.&lt;/p&gt;
+
+&lt;p&gt;Second, there may be some scenarios in which attention is &lt;strong&gt;redundant&lt;/strong&gt;. &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1031.pdf&quot; class=&quot;citation&quot; key=&quot;Bollmann_2017&quot;&gt;Bollman et al.&lt;/a&gt; find that when they introduce an auxiliary task for multi-task learning, the addition of an attention mechanism becomes &lt;em&gt;harmful&lt;/em&gt; rather than helpful. As explanation, they provide evidence that the auxiliary task enables the model to learn to focus attention, which makes the attention mechanism redundant. Though I don’t fully understand this interaction between attention and multi-task learning, we should take note of the phenomenon as it poses a potential pitfall for the development of future systems.&lt;/p&gt;
+
+&lt;p&gt;Lastly, there are some simpler tasks for which attention may be &lt;strong&gt;more than you need&lt;/strong&gt;. &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1183.pdf&quot; class=&quot;citation&quot; key=&quot;Aharoni_2017&quot;&gt;Aharoni et al.&lt;/a&gt; argue that for morphological inflection generation, which typically requires focusing on just one character at a time, the standard “soft” attention is overkill – they find the simpler “hard” attention sufficient.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/hard_soft_attn_250h.png&quot; alt=&quot;2D visualization of embeddings produced by hard and soft attention.&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Hard attention produces more clearly-defined clusters than soft attention. Aharoni et al.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;h4 id=&quot;looking-forward-1&quot;&gt;Looking forward&lt;/h4&gt;
+
+&lt;p&gt;Although attention was originally &lt;a href=&quot;https://arxiv.org/pdf/1409.0473.pdf&quot; class=&quot;citation&quot; key=&quot;Bahdanau_2015&quot;&gt;conceived&lt;/a&gt; as a fix to the bottleneck problem in sequence-to-sequence NMT, it has turned out to be a much more fundamental and generally useful technique. By thinking about &lt;em&gt;why&lt;/em&gt; attention is so popular, we might identify some of the current needs of the deep learning community – for example the need for interpretability, for long distance dependencies, and for dynamic structure. I hope that attention is just the first step towards achieving these things.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Though this is only the second ACL I’ve attended, I was really impressed by this year’s &lt;a href=&quot;http://acl2017.org/organization&quot;&gt;organizing committee&lt;/a&gt;, who did an amazing job of being transparent, listening to the community’s concerns, and proactively addressing them. This year’s conference featured an extensive &lt;a href=&quot;https://chairs-blog.acl2017.org/2017/05/31/official-acl-survey-preprint-publishing-and-reviewing-make-your-voice-heard/&quot;&gt;open discussion&lt;/a&gt; of preprint servers and the submission process, as well as a strong emphasis on diversity, accessibility and ethics. In this era of very empirical-driven work, I was also glad to see multiple reminders that we should aspire to do &lt;a href=&quot;https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/68?src=clipshare&quot;&gt;good, hypothesis-driven science&lt;/a&gt; that is &lt;a href=&quot;https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/75?src=clipshare&quot;&gt;replicable and reproducible&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Just a few years after the deep learning tidal wave, the NLP community has reason to feel both excited and anxious – excited about where deep learning will lead next, and anxious about whether that’s the right direction. But I have confidence in this community to get the best out of both deep learning and NLP; to change with the times while retaining its collective wisdom. So, no need for hype nor fear. &lt;strong&gt;Deep learning is neither the ultimate solution nor the death of NLP.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;em&gt;Thanks to my advisor Chris Manning who read several drafts of this post, as well as the following people who gave me their opinions and/or answered my questions about their work: David Jurgens, Lucy Li, Gábor Berend, Yang Liu, Jiwei Tan.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;What themes and trends did you observe at ACL 2017? Discuss in the comments.&lt;/em&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 30 Aug 2017 00:00:00 -0700</pubDate>
+      </item>
+    
+      <item>
+        <title>Four deep learning trends from ACL 2017</title>
+        <link>http://localhost:4000/2017/08/30/four-deep-learning-trends-from-acl-2017-part-1.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/08/30/four-deep-learning-trends-from-acl-2017-part-1.html</guid>
+        <description>&lt;head&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/d3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/jquery-3.1.0.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/underscore-min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/sprintf.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+
+// Define the div for the tooltip
+var tooltip_div = d3.select(&quot;body&quot;).append(&quot;div&quot;)
+    .attr(&quot;class&quot;, &quot;tooltip&quot;)
+    .style(&quot;opacity&quot;, 0);
+
+function start() {
+  var json_fname = &quot;/bibliography/bibliography.json&quot;
+
+  function json_success(data) {
+    // Displays the data
+    console.log(&quot;successfully loaded json file.&quot;)
+    var id2data = {}
+    for (var i=0; i&lt;data.length; i++) {
+      var pub = data[i]
+      id2data[pub.id] = pub
+    }
+    add_citations(id2data)
+  }
+
+  function json_fail(d) {
+    console.log(&quot;failure to load &quot; + json_fname)
+  }
+
+  $.getJSON(json_fname, json_success).fail(json_fail);
+}
+
+function get_url(key, id2data) {
+  var pub = id2data[key]
+  return pub.url
+}
+
+function get_info(key, id2data) {
+  var pub = id2data[key]
+  var title = pub.title
+  var authors = pub.author
+  var author_string = &quot;&quot;
+  for (var i=0; i&lt;authors.length; i++) {
+    var author = authors[i]
+    author_string += author.given + &quot; &quot; + author.family
+    if (i&lt;authors.length-1) {
+      author_string += &quot;, &quot;
+    }
+  }
+  var venue = pub[&quot;short-venue&quot;]
+  var year = pub.issued[&quot;date-parts&quot;][0]
+  var html = &quot;&lt;i&gt;&lt;b&gt;&quot; + title + &quot;.&lt;/b&gt;&lt;/i&gt;&lt;br&gt;&quot; + author_string + &quot;.&lt;br&gt;&quot; + venue + &quot;, &quot; + year + &quot;.&quot;
+  return html
+}
+
+function add_citations(id2data) {
+  d3.select(&quot;body&quot;).selectAll(&quot;.citation&quot;)
+    .on(&quot;mouseover&quot;, function() {
+      var key = this.getAttribute(&quot;key&quot;)
+      var info = get_info(key,id2data)
+      tooltip_div.transition()
+          .duration(200)
+          .style(&quot;opacity&quot;, 1);
+      tooltip_div.html(info)
+          .style(&quot;left&quot;, (d3.event.pageX - 150) + &quot;px&quot;)
+          .style(&quot;top&quot;, (d3.event.pageY + 20) + &quot;px&quot;);
+      })
+    .on(&quot;mouseout&quot;, function() {
+      tooltip_div.transition()
+          .duration(200)
+          .style(&quot;opacity&quot;, 0);
+    });
+}
+
+&lt;/script&gt;
+
+&lt;/head&gt;
+
+&lt;body onload=&quot;start();&quot;&gt;&lt;/body&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/4?src=clipshare&quot;&gt;“NLP is booming”&lt;/a&gt;, declared Joakim Nivre at the presidential address of ACL 2017, which I attended in Vancouver earlier this month. As evidenced by the throngs of attendees, interest in NLP is at an all-time high – an increase that is chiefly due to the successes of the deep learning renaissance, which recently swept like a tidal wave over the field.&lt;/p&gt;
+
+&lt;p&gt;Beneath the optimism however, I noticed a tangible anxiety at ACL, as one field adjusts to its rapid transformation by another. Researchers asked whether there is anything of the old NLP left – or was it all swept away by the tidal wave? Are neural networks the only technique we need any more? How do we do good science now that experiments are so empirical, papers are immediately on arXiv, and access to GPUs can determine success?&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/scream_250h.png&quot; alt=&quot;I don't have money for GPUs! Is NLP dead? And language? I really like my features!&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Mirella Lapata&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;Though these difficult questions were at the forefront of the conference (the presidential address even alluded to &lt;a href=&quot;https://medium.com/@yoav.goldberg/an-adversarial-review-of-adversarial-generation-of-natural-language-409ac3378bd7&quot;&gt;a recent high-profile debate&lt;/a&gt; on the subject), the overall mood was positive nonetheless. At ACL 2017, the NLP community continued to enthusiastically embrace deep learning, though with a healthy skepticism. As researchers are starting to reach a clearer view of what works and what doesn’t with current neural methods, there is a growing trend to consult older NLP wisdom to guide and improve those methods. In this post I take a look at what’s happening at this pivotal time for NLP research.&lt;/p&gt;
+
+&lt;h2 id=&quot;about-this-post&quot;&gt;About this post&lt;/h2&gt;
+
+&lt;p&gt;In this two-part post, I describe &lt;strong&gt;four broad research trends&lt;/strong&gt; that I observed at the conference (and its co-located events) through papers, presentations and discussions. The content is guided entirely by my own research interests; accordingly it’s mostly focused on deep learning, sequence-to-sequence models, and adjacent topics. This first part will explore two inter-related themes: &lt;a href=&quot;#structure&quot;&gt;linguistic structure&lt;/a&gt; and &lt;a href=&quot;#word_emb&quot;&gt;word representations&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; This recap is &lt;em&gt;by no means&lt;/em&gt; exhaustive, as I did not come close to reading every paper at ACL – consequently I’m sure there are many relevant papers that are not mentioned here. Secondly, I have done my best to accurately understand others’ work, but if I’ve misrepresented any piece of work, let me know. Thirdly, as a person who is fairly new to the field, I may lack a longer perspective on some of these trends. If you have a more historically-informed perspective, I’d be interested to hear it.&lt;/p&gt;
+
+&lt;h2 id=&quot;trend-1-linguistic-structure-is-back&quot;&gt;&lt;a id=&quot;structure&quot;&gt;&lt;/a&gt;Trend 1: Linguistic Structure is Back&lt;/h2&gt;
+
+&lt;p&gt;The recent deep learning renaissance has emphasized a simple uniform paradigm for NLP: &lt;em&gt;language is just sequences of words&lt;/em&gt;. According to this logic, any further structure is unnecessary – simply train a RNN end-to-end and stochastic gradient descent will figure out the rest! While this approach has rapidly found enormous popularity and success (not least due to the convenience of requiring no feature engineering), its limitations are now becoming more apparent. At ACL 2017, several prominent researchers pushed back against the “language is just sequences” zeitgeist and presented reasons, both practical and principled, why NLP should re-embrace linguistic structure.&lt;/p&gt;
+
+&lt;h4 id=&quot;reason-1-reduce-the-search-space&quot;&gt;Reason 1: Reduce the search space&lt;/h4&gt;
+
+&lt;p&gt;In her very entertaining &lt;a href=&quot;https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back?ref=https://chairs-blog.acl2017.org/2017/08/06/archiving-your-presentations-and-posters/&quot;&gt;keynote talk&lt;/a&gt;, Mirella Lapata questioned the hegemony of the RNN sequence-to-sequence framework, &lt;a href=&quot;https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back/23?src=clipshare&quot;&gt;asking&lt;/a&gt; rhetorically whether its dominance means language is dead, and all linguistic features should be discarded. Instead she concluded that &lt;a href=&quot;https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back/73?src=clipshare&quot;&gt;Structure Is Coming Back&lt;/a&gt;, and provided &lt;a href=&quot;https://www.slideshare.net/aclanthology/mirella-lapata-2017-translating-from-multiple-modalities-to-text-and-back/74?src=clipshare&quot;&gt;via example&lt;/a&gt; one reason to embrace its return: &lt;strong&gt;linguistic structure reduces the search space&lt;/strong&gt; of possible outputs, making it easier to generate well-formed output.&lt;/p&gt;
+
+&lt;p&gt;For example, code generation involves mapping a natural language utterance such as &lt;em&gt;“generate a list of the first 10 square numbers”&lt;/em&gt; to a corresponding code snippet, e.g. &lt;em&gt;“[x**2 for x in range(10)]”&lt;/em&gt; in Python. This task has been attempted with the standard sequence-to-sequence method, which regards the code as simply a sequence of tokens, rather than its underlying tree structure. This makes the generation task an unconstrained search over the entire output space of all sequences of tokens – a search task that is both daunting and prone to generate ill-formed output (for example, the decoder may generate code with mismatched brackets). In their ACL papers, both &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1041.pdf&quot; class=&quot;citation&quot; key=&quot;Yin_2017&quot;&gt;Yin and Neubig&lt;/a&gt; and &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1105.pdf&quot; class=&quot;citation&quot; key=&quot;Rabinovich_2017&quot;&gt;Rabinovich et al.&lt;/a&gt;  take the structured prediction approach instead, and directly generate the underlying abstract syntax tree. This approach restricts the search space to well-formed trees only, eliminating ill-formed output and making the search problem more manageable.&lt;/p&gt;
+
+&lt;p&gt;Though linguistic structure has obvious benefits for tasks with highly-formalized output such as code generation and semantic parsing, it can also help reduce the search space for less obvious tasks, like cloze-style reading comprehension. By observing that the correct answer is almost always a constituent in the source document’s parse tree, &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1129.pdf&quot; class=&quot;citation&quot; key=&quot;Xie_2017&quot;&gt;Xie and Xing&lt;/a&gt;  construct a system that explores only those nodes – they argue this is both easier and more effective than exploring all possible spans in the document.&lt;/p&gt;
+
+&lt;h4 id=&quot;reason-2-linguistic-scaffolding&quot;&gt;Reason 2: Linguistic scaffolding&lt;/h4&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/squash.png&quot; alt=&quot;Who wants an all-squash diet?&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Noah Smith&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;In his &lt;a href=&quot;https://www.slideshare.net/aclanthology/noah-a-smith-2017-squashing-computational-linguistics?ref=https://chairs-blog.acl2017.org/2017/08/06/archiving-your-presentations-and-posters/&quot;&gt;keynote talk&lt;/a&gt;, Noah Smith argued against what he calls the “all-squash diet” – the use of linear transformations + squashing functions (a.k.a. neural networks) as the sole model for NLP. Instead he encouraged the NLP community to think about our models’ &lt;em&gt;inductive biases&lt;/em&gt; – that is, the models’ underlying assumptions and how those assumptions affect what they learn.&lt;/p&gt;
+
+&lt;p&gt;In particular, Smith highlighted the power of &lt;strong&gt;multi-task learning&lt;/strong&gt; as a way to incorporate a desirable inductive bias. It is well-known that jointly learning a linguistic scaffolding task (such as syntactic parsing) with the main task (such as machine translation) tends to boost the performance of the main task – most likely because the main task is enriched by the useful information contained in the low-level shared representations. ACL saw several papers successfully take this approach – in particular &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-2012.pdf&quot; class=&quot;citation&quot; key=&quot;Eriguchi_2017&quot;&gt;Eriguchi et al.&lt;/a&gt; and &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1065.pdf&quot; class=&quot;citation&quot; key=&quot;Wu_2017&quot;&gt;Wu et al.&lt;/a&gt; designed new hybrid decoders for NMT that use shift-reduce algorithms to simultaneously generate and parse the target sequence.&lt;/p&gt;
+
+&lt;p&gt;These joint NMT+parsing systems, which seem to outperform sequence-to-sequence systems, may also benefit from Reason 1 (reducing the search space). As has been &lt;a href=&quot;http://aclweb.org/anthology/W/W17/W17-3204.pdf&quot; class=&quot;citation&quot; key=&quot;Koehn_2017&quot;&gt;noted&lt;/a&gt;, NMT performance is poor for long sentences, and (counter-intuitively) larger beam sizes can sometimes &lt;em&gt;degrade&lt;/em&gt; performance further. If widening the search beam causes a drop in performance, this implies that our current methods have difficulty identifying the best output when there are more candidates to choose from. Jointly parsing the output may eliminate poor-quality outputs from the search beam, thus allowing beam search to choose between better-quality candidates.&lt;/p&gt;
+
+&lt;h4 id=&quot;reason-3-syntactic-recency--sequential-recency&quot;&gt;Reason 3: Syntactic recency &amp;gt; sequential recency&lt;/h4&gt;
+
+&lt;p&gt;Chris Dyer also argued for the importance of incorporating linguistic structure into deep learning in his CoNLL keynote &lt;a href=&quot;http://www.conll.org/keynotes-2017&quot;&gt;&lt;em&gt;Should Neural Network Architecture Reflect Linguistic Structure?&lt;/em&gt;&lt;/a&gt; Like Noah Smith, he drew attention to the inductive biases inherent in the sequential approach, &lt;a href=&quot;https://twitter.com/boknilev/status/893145262473924608&quot;&gt;arguing that&lt;/a&gt; RNNs have an inductive bias towards &lt;em&gt;sequential recency&lt;/em&gt;, while syntax-guided hierarchical architectures (such as recursive NNs and RNNGs) have an inductive bias towards &lt;em&gt;syntactic recency&lt;/em&gt;. Asserting that language is inherently hierarchical, Dyer concluded that &lt;strong&gt;syntactic recency is a preferable inductive bias to sequential recency&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;At ACL, several papers noted the apparent inability of RNNs to capture long-range dependencies, and obtained improvements using recursive models instead. For example, in &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1177.pdf&quot; class=&quot;citation&quot; key=&quot;Chen_2017&quot;&gt;&lt;em&gt;Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder&lt;/em&gt;&lt;/a&gt;, Chen et al. find that using a recursive encoder improves performance overall, and the improvement is greater for longer sentences. The latter may be evidence of the benefit of syntactic recency, which can capture long-term dependencies more easily than sequential recency.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/syntactic_recency_200h.png&quot; alt=&quot;Syntax tree with long-distance dependency indicated.&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;This example from Wu et al. shows the difference between syntactic recency (red dotted line) and sequential recency.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;h4 id=&quot;looking-forward&quot;&gt;Looking forward&lt;/h4&gt;
+
+&lt;p&gt;Though linguistic structure is making a comeback, some barriers remain. Multi-task learning is cumbersome to implement. Non-sequential architectures are harder to parallelize on GPUs (however &lt;a href=&quot;https://github.com/clab/dynet&quot;&gt;new dynamic libraries&lt;/a&gt; provide easier and more efficient implementations). Supervised learning of structured prediction tasks can be hindered by a lack of parallel data. Fortunately, the resurgence of Reinforcement Learning is well-timed; at ACL 2017 both &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1003.pdf&quot; class=&quot;citation&quot; key=&quot;Liang_2017&quot;&gt;Liang et al.&lt;/a&gt; and &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1167.pdf&quot; class=&quot;citation&quot; key=&quot;Iyyer_2017&quot;&gt;Iyyer et al.&lt;/a&gt; use weak supervision to perform question answering via semantic parsing, without access to the parses themselves.&lt;/p&gt;
+
+&lt;p&gt;Despite these barriers, I think the NLP community will continue to (re-)embrace linguistic structure as its benefits become more apparent. While the “language is just sequences” paradigm argues that RNNs &lt;em&gt;can&lt;/em&gt; compute anything, researchers are increasingly interested in how the inductive biases of the sequential model affect what they &lt;em&gt;do&lt;/em&gt; compute. On this matter, it seems that a little linguistic structure can go a long way.&lt;/p&gt;
+
+&lt;h2 id=&quot;-trend-2-reconsidering-word-embeddings&quot;&gt;&lt;a id=&quot;word_emb&quot;&gt;&lt;/a&gt; Trend 2: Reconsidering Word Embeddings&lt;/h2&gt;
+
+&lt;p&gt;The number of papers with “word embedding” in the title fell from ten to four this year, perhaps in part due to a shift towards sub-word-level representations (more on that below). Nonetheless, word embeddings remain a standard technique, and the papers at ACL this year were very interesting – perhaps precisely &lt;em&gt;because&lt;/em&gt; word embeddings have passed through the “hype” stage and into the “thoughtful scrutiny” stage. These papers probed the boundaries of how word embeddings succeed and fail, what they do and don’t capture, and how to improve on their weaknesses.&lt;/p&gt;
+
+&lt;h4 id=&quot;better-understanding-word-embeddings&quot;&gt;Better understanding word embeddings&lt;/h4&gt;
+
+&lt;p&gt;Perhaps the most famous and surprising (but often-exaggerated) success of word embeddings is their &lt;strong&gt;additive compositional structure&lt;/strong&gt;, as evidenced by word analogies. The cryptically-titled &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1007.pdf&quot; class=&quot;citation&quot; key=&quot;Gittens_2017&quot;&gt;&lt;em&gt;Skip-Gram – Zipf + Uniform = Vector Additivity&lt;/em&gt;&lt;/a&gt; aims to explain this success. The authors prove that distributional word embeddings trained with the skip-gram model have additive structure under certain assumptions – most notably that the words are uniformly distributed (this is the meaning of &lt;em&gt;“– Zipf + Uniform”&lt;/em&gt;). Though training corpora are not uniformly distributed, this result may go some way to explain the additivity of word embeddings.&lt;/p&gt;
+
+&lt;p&gt;Other papers investigated the &lt;strong&gt;limitations of the distributional assumption&lt;/strong&gt; at the heart of word embeddings. Li and Gauthier ask &lt;a href=&quot;http://www.aclweb.org/anthology/W/W17/W17-2810.pdf&quot; class=&quot;citation&quot; key=&quot;Lucy_2017&quot;&gt;&lt;em&gt;Are distributional representations ready for the real world?&lt;/em&gt;&lt;/a&gt;, and find that while word embeddings capture certain &lt;em&gt;conceptual&lt;/em&gt; features such as “is edible”, and “is a tool”, they do not tend to capture &lt;em&gt;perceptual&lt;/em&gt; features such as “is chewy” and “is curved” – potentially because the latter are not easily inferred from distributional semantics alone. The paper joins a growing call for grounded learning, as evidenced by the founding of a new workshop on &lt;a href=&quot;https://robonlp2017.github.io/&quot;&gt;Language Grounding for Robotics&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Another, more glaring baked-in problem of word embeddings is that they do not account for &lt;strong&gt;polysemy&lt;/strong&gt;, instead assigning exactly one vector per surface form. In one approach to this problem, &lt;a href=&quot;http://aclweb.org/anthology/W/W17/W17-2613.pdf&quot; class=&quot;citation&quot; key=&quot;Upadhyay_2017&quot;&gt;Upadhyay et al.&lt;/a&gt; leverage multi-lingual parallel data to learn multi-sense word embeddings – for example, seeing the English word &lt;em&gt;bank&lt;/em&gt; translated to both the French words &lt;em&gt;banc&lt;/em&gt; and &lt;em&gt;banque&lt;/em&gt; is evidence that &lt;em&gt;bank&lt;/em&gt; is polysemous, and helps disentangle its two meanings. In &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1151.pdf&quot; class=&quot;citation&quot; key=&quot;Athiwaratkun_2017&quot;&gt;&lt;em&gt;Multimodal Word Distributions&lt;/em&gt;&lt;/a&gt;, Athiwaratkun and Wilson represent words not by single vectors, but by Gaussian probability distributions with multiple modes – thus capturing both uncertainty and polysemy. The paper has a very impressive &lt;a href=&quot;http://35.161.153.223:6003/&quot;&gt;Tensorboard demo&lt;/a&gt;: go to the “Embeddings” tab and search for a polysemous word like “zip”. you should find that the three modes are clustered with related words from the three different senses (zip code, clothes zip and zipped file).&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/zip.png&quot; alt=&quot;The three senses of 'zip' with their different word clusters&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Athiwaratkun et al.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;h4 id=&quot;going-sub-word&quot;&gt;Going sub-word&lt;/h4&gt;
+
+&lt;p&gt;Arguably the most urgent limitation of standard word embeddings is their &lt;strong&gt;blindness to morphological information&lt;/strong&gt;, instead treating each surface form as a separate, anonymous unit. This can cause problems like an inability to recognize that two words (e.g. &lt;em&gt;speaker&lt;/em&gt; and &lt;em&gt;speaking&lt;/em&gt;) have the same lemma (&lt;em&gt;speak&lt;/em&gt;) and are therefore highly related. This is the main reason for the recent shift away from word embeddings and towards sub-word representations, such as characters, character n-grams, and word pieces. These representations had a strong showing at ACL 2017, comparing favorably to word embeddings on both intrinsic tasks like &lt;a href=&quot;http://www.aclweb.org/anthology/Q/Q17/Q17-1010.pdf&quot; class=&quot;citation&quot; key=&quot;Bojanowski_2017&quot;&gt;word similarity and analogies&lt;/a&gt; as well as extrinsic tasks like &lt;a href=&quot;https://arxiv.org/pdf/1610.03017.pdf&quot; class=&quot;citation&quot; key=&quot;Lee_2017&quot;&gt;Machine Translation&lt;/a&gt;, &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1137.pdf&quot; class=&quot;citation&quot; key=&quot;Kawakami_2017&quot;&gt;Language Modeling&lt;/a&gt; and &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-2106.pdf&quot; class=&quot;citation&quot; key=&quot;Yu_2017&quot;&gt;dependency parsing&lt;/a&gt;. For logographic languages like Chinese/Japanese/Korean, the meaning of a character can be &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1188.pdf&quot; class=&quot;citation&quot; key=&quot;Liu_2017&quot;&gt;composed from the visual features&lt;/a&gt; of its component parts.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/characters_250h.png&quot; alt=&quot;Different characters with similar parts highlighted&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Liu et al.&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;p&gt;With these sub-word representations, and in particular the character-CNN emerging as a potential new standard, &lt;strong&gt;is morphology solved&lt;/strong&gt;? At least two papers gave a resounding “no”. &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1184.pdf&quot; class=&quot;citation&quot; key=&quot;Vania_2017&quot;&gt;Vania and Lopez&lt;/a&gt; compared the language modeling performance of several sub-word compositional representations, and found that none of them perform as well as a model that has access to gold morphological annotations. This result held even when providing the raw input model with ten times the training data – suggesting that at best, our current language modeling methods require a very large amount of data to implicitly learn morphology, and at worst, no amount of training data can replace morphological understanding. In &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1080.pdf&quot; class=&quot;citation&quot; key=&quot;Belinkov_2017&quot;&gt;&lt;em&gt;What do Neural Machine Translation Models Learn about Morphology?&lt;/em&gt;&lt;/a&gt;, Belinkov et al. show that while character-based NMT representations are better than word-based representations both for NMT and morphological tagging, they have far from perfect performance on the latter.&lt;/p&gt;
+
+&lt;p&gt;These results suggest that, if we want truly morphologically-aware word representations, we may need &lt;strong&gt;a more explicit model of morphology&lt;/strong&gt; than just character composition. In their &lt;a href=&quot;http://www.aclweb.org/anthology/P/P17/P17-1006.pdf&quot; class=&quot;citation&quot; key=&quot;Vuli__2017&quot;&gt;&lt;em&gt;Morph-fitting&lt;/em&gt;&lt;/a&gt; paper, Vulić et al. fine-tune word embeddings by using some very simple morphological rules written by non-linguists (e.g., in English the prefix &lt;em&gt;un-&lt;/em&gt; indicates an antonym). This results in substantial improvements, showing that even a modicum of linguistic knowledge can be very effective. Meanwhile, &lt;a href=&quot;https://arxiv.org/pdf/1701.00946.pdf&quot; class=&quot;citation&quot; key=&quot;Cotterell_2017&quot;&gt;Cotterell and Schütze&lt;/a&gt; present a more comprehensive model of morphology, jointly learning a system that can both segment a word into its morphological components (e.g. &lt;em&gt;questionably&lt;/em&gt; → &lt;em&gt;question+able+ly&lt;/em&gt;) and compose the component representations back into the word representation. I think this is a very worthwhile approach, as any morphological understanding system must be able to compose and decompose meaning. Though the model performs well on the intrinsic evaluation tasks, I’d be interested to see how easily and how successfully it transfers to extrinsic tasks such as syntactic parsing or language modeling.&lt;/p&gt;
+
+&lt;!-- from here: https://superdevresources.com/image-caption-jekyll/ --&gt;
+&lt;div class=&quot;image-wrapper&quot;&gt;
+    
+      &lt;img src=&quot;http://localhost:4000/img/compositional_250h.png&quot; alt=&quot;The word embedding is be composed from the embeddings of its morphological parts&quot; /&gt;
+    
+    
+        &lt;p class=&quot;image-caption&quot;&gt;Cotterell and Schütze&lt;/p&gt;
+    
+&lt;/div&gt;
+
+&lt;h4 id=&quot;looking-forward-1&quot;&gt;Looking forward&lt;/h4&gt;
+
+&lt;p&gt;Words are the very basis of language, so our assumptions matter when we choose how to model them.&lt;/p&gt;
+
+&lt;p&gt;Though distributional semantics has served us well so far, words are more than the contexts in which they appear. In the coming years I think we will see more grounded, visual and interactive language learning to complement distributional representations.&lt;/p&gt;
+
+&lt;p&gt;Like the &lt;em&gt;“language is just sequences of words”&lt;/em&gt; assumption, &lt;em&gt;“words are just anonymous tokens”&lt;/em&gt; seems to be on its way out. However, I expect the question of &lt;em&gt;“words are just sequences of characters”&lt;/em&gt; vs. &lt;em&gt;“morphological structure is important”&lt;/em&gt; will be a matter of future debate, both philosophical and practical.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;next-time&quot;&gt;Next time&lt;/h4&gt;
+&lt;p&gt;If you’ve enjoyed this post, check out &lt;a href=&quot;/2017/08/30/four-deep-learning-trends-from-acl-2017-part-2.html&quot;&gt;Part Two&lt;/a&gt;, in which I discuss interpretability and attention, and find that neither are as easy to define as we think they might be.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 30 Aug 2017 00:00:00 -0700</pubDate>
+      </item>
+    
+      <item>
+        <title>Taming Recurrent Neural Networks for Better Summarization</title>
+        <link>http://localhost:4000/2017/04/16/taming-rnns-for-better-summarization.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/04/16/taming-rnns-for-better-summarization.html</guid>
+        <description>&lt;p&gt;&lt;em&gt;This is a blog post about our latest paper, &lt;a href=&quot;https://arxiv.org/pdf/1704.04368.pdf&quot;&gt;Get To The Point: Summarization with Pointer-Generator Networks&lt;/a&gt;, to appear at &lt;a href=&quot;http://acl2017.org/&quot;&gt;ACL 2017&lt;/a&gt;. The code is available &lt;a href=&quot;https://github.com/abisee/pointer-generator&quot;&gt;here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The internet age has brought unfathomably massive amounts of information to the fingertips of billions – if only we had time to read it.
+Though our lives have been transformed by ready access to limitless data, we also find ourselves ensnared by &lt;a href=&quot;https://en.wikipedia.org/wiki/Information_overload&quot;&gt;information overload&lt;/a&gt;.
+For this reason, &lt;em&gt;automatic text summarization&lt;/em&gt; – the task of automatically condensing a piece of text to a shorter version – is becoming increasingly vital.&lt;/p&gt;
+
+&lt;h3 id=&quot;two-types-of-summarization&quot;&gt;Two types of summarization&lt;/h3&gt;
+
+&lt;p&gt;There are broadly two approaches to automatic text summarization: &lt;em&gt;extractive&lt;/em&gt; and &lt;em&gt;abstractive&lt;/em&gt;.&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Consectetur adipiscing elit&lt;/li&gt;
-  &lt;li&gt;Donec a diam lectus&lt;/li&gt;
-  &lt;li&gt;Sed sit amet ipsum mauris&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Extractive&lt;/strong&gt; approaches select passages from the source text, then arrange them to form a summary. You might think of these approaches as like a highlighter.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Ut turpis felis, pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/img/highlighter.jpg&quot; alt=&quot;a highlighter&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas convallis ullamcorper ultricies. Curabitur ornare, ligula &lt;em&gt;semper consectetur sagittis&lt;/em&gt;, nisi diam iaculis velit, id fringilla sem nunc vel mi. Nam dictum, odio nec pretium volutpat, arcu ante placerat erat, non tristique elit urna et turpis. Quisque mi metus, ornare sit amet fermentum et, tincidunt et orci. Fusce eget orci a orci congue vestibulum.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Abstractive&lt;/strong&gt; approaches use natural language generation techniques to write novel sentences. By the same analogy, these approaches are like a pen.&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;Ut dolor diam, elementum et vestibulum eu, porttitor vel elit. Curabitur venenatis pulvinar tellus gravida ornare. Sed et erat faucibus nunc euismod ultricies ut id justo. Nullam cursus suscipit nisi, et ultrices justo sodales nec. Fusce venenatis facilisis lectus ac semper. Aliquam at massa ipsum. Quisque bibendum purus convallis nulla ultrices ultricies. Nullam aliquam, mi eu aliquam tincidunt, purus velit laoreet tortor, viverra pretium nisi quam vitae mi. Fusce vel volutpat elit. Nam sagittis nisi dui.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/img/pen.jpg&quot; alt=&quot;a pen&quot; /&gt;&lt;/p&gt;
 
-&lt;blockquote&gt;
-  &lt;p&gt;Suspendisse lectus leo, consectetur in tempor sit amet, placerat quis neque&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;The great majority of existing approaches to automatic summarization are extractive – mostly because it is much easier to &lt;em&gt;select&lt;/em&gt; text than it is to &lt;em&gt;generate&lt;/em&gt; text from scratch.
+For example, if your extractive approach involves selecting and rearranging whole sentences from the source text, you are guaranteed to produce a summary that is grammatical, fairly readable, and related to the source text.
+These systems (several &lt;a href=&quot;http://autosummarizer.com&quot;&gt;are&lt;/a&gt; &lt;a href=&quot;http://textcompactor.com/&quot;&gt;available&lt;/a&gt; &lt;a href=&quot;http://smmry.com/&quot;&gt;online&lt;/a&gt;) can be reasonably successful when applied to mid-length factual text such as news articles and technical documents.&lt;/p&gt;
 
-&lt;p&gt;Etiam luctus porttitor lorem, sed suscipit est rutrum non. Curabitur lobortis nisl a enim congue semper. Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt.&lt;/p&gt;
+&lt;p&gt;On the other hand, the extractive approach is too restrictive to produce human-like summaries – especially of longer, more complex text.
+Imagine trying to write a &lt;a href=&quot;https://en.wikipedia.org/wiki/Great_Expectations#Plot_summary&quot;&gt;Wikipedia-style plot synopsis&lt;/a&gt; of a novel – say, &lt;em&gt;Great Expectations&lt;/em&gt; – solely by selecting and rearranging sentences from the book.
+This would be impossible.
+For one thing, &lt;em&gt;Great Expectations&lt;/em&gt; is written in the first person whereas a synopsis should be in the third person.
+More importantly, condensing whole chapters of action down to a sentence like &lt;em&gt;Pip visits Miss Havisham and falls in love with her adopted daughter Estella&lt;/em&gt; requires powerful paraphrasing that is possible only in an abstractive framework.&lt;/p&gt;
 
-&lt;p&gt;Phasellus eget dolor sit amet ipsum dapibus condimentum vitae quis lectus. Aliquam ut massa in turpis dapibus convallis. Praesent elit lacus, vestibulum at malesuada et, ornare et est. Ut augue nunc, sodales ut euismod non, adipiscing vitae orci. Mauris ut placerat justo. Mauris in ultricies enim. Quisque nec est eleifend nulla ultrices egestas quis ut quam. Donec sollicitudin lectus a mauris pulvinar id aliquam urna cursus. Cras quis ligula sem, vel elementum mi. Phasellus non ullamcorper urna.&lt;/p&gt;
+&lt;p&gt;In short: abstractive summarization may be difficult, but it’s essential!&lt;/p&gt;
+
+&lt;h3 id=&quot;enter-recurrent-neural-networks&quot;&gt;Enter Recurrent Neural Networks&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;If you’re unfamiliar with Recurrent Neural Networks or the attention mechanism, check out the excellent tutorials by &lt;a href=&quot;http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-1-introduction-to-rnns/&quot;&gt;WildML&lt;/a&gt;, &lt;a href=&quot;http://karpathy.github.io/2015/05/21/rnn-effectiveness/&quot;&gt;Andrej Karpathy&lt;/a&gt; and &lt;a href=&quot;http://distill.pub/2016/augmented-rnns/&quot;&gt;Distill&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;In the past few years, the Recurrent Neural Network (RNN) – a type of neural network that can perform calculations on sequential data (e.g. sequences of words) – has become the standard approach for many Natural Language Processing tasks.
+In particular, the &lt;em&gt;sequence-to-sequence model with attention&lt;/em&gt;, illustrated below, has become popular for summarization.
+Let’s step through the diagram!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/img/seq2seq-attn.png&quot; alt=&quot;sequence-to-sequence network with attention&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this example, our source text is a news article that begins &lt;em&gt;Germany emerge victorious in 2-0 win against Argentina on Saturday&lt;/em&gt;, and we’re in the process of producing the abstractive summary &lt;em&gt;Germany beat Argentina 2-0&lt;/em&gt;.
+First, the &lt;em&gt;&lt;font color=&quot;#db4437&quot;&gt;encoder RNN&lt;/font&gt;&lt;/em&gt; reads in the source text word-by-word, producing a sequence of &lt;em&gt;&lt;font color=&quot;#db4437&quot;&gt;encoder hidden states&lt;/font&gt;&lt;/em&gt;.
+(There are arrows in both directions because our encoder is &lt;em&gt;bidirectional&lt;/em&gt;, but that’s not important here).&lt;/p&gt;
+
+&lt;p&gt;Once the encoder has read the entire source text, the &lt;em&gt;&lt;font color=&quot;#f4b400&quot;&gt;decoder RNN&lt;/font&gt;&lt;/em&gt; begins to output a sequence of words that should form a summary.
+On each step, the decoder receives as input the previous word of the summary (on the first step, this is a special &amp;lt;START&amp;gt; token which is the signal to begin writing) and uses it to update the &lt;em&gt;&lt;font color=&quot;#f4b400&quot;&gt;decoder hidden state&lt;/font&gt;&lt;/em&gt;.
+This is used to calculate the &lt;em&gt;&lt;font color=&quot;#4285f4&quot;&gt;attention distribution&lt;/font&gt;&lt;/em&gt;, which is a probability distribution over the words in the source text.
+Intuitively, the attention distribution tells the network where to look to help it produce the next word.
+In the diagram above, the decoder has so far produced the first word &lt;em&gt;Germany&lt;/em&gt;, and is concentrating on the source words &lt;em&gt;win&lt;/em&gt; and &lt;em&gt;victorious&lt;/em&gt; in order to generate the next word &lt;em&gt;beat&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Next, the attention distribution is used to produce a weighted sum of the encoder hidden states, known as the &lt;em&gt;&lt;font color=&quot;#4285f4&quot;&gt;context vector&lt;/font&gt;&lt;/em&gt;.
+The context vector can be regarded as “what has been read from the source text” on this step of the decoder.
+Finally, the context vector and the decoder hidden state are used to calculate the &lt;em&gt;&lt;font color=&quot;#0f9d58&quot;&gt;vocabulary distribution&lt;/font&gt;&lt;/em&gt;, which is a probability distribution over all the words in a large fixed vocabulary (typically tens or hundreds of thousands of words).
+The word with the largest probability (on this step, &lt;em&gt;beat&lt;/em&gt;) is chosen as output, and the decoder moves on to the next step.&lt;/p&gt;
+
+&lt;p&gt;The decoder’s ability to freely generate words in any order – including words such as &lt;em&gt;beat&lt;/em&gt; that do not appear in the source text – makes the sequence-to-sequence model a potentially powerful solution to abstractive summarization.&lt;/p&gt;
+
+&lt;h3 id=&quot;two-big-problems&quot;&gt;Two Big Problems&lt;/h3&gt;
+
+&lt;p&gt;Unfortunately, this approach to summarization suffers from two big problems:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;u&gt;Problem 1&lt;/u&gt;&lt;/strong&gt;: The summaries sometimes &lt;strong&gt;reproduce factual details inaccurately&lt;/strong&gt; (e.g. &lt;em&gt;Germany beat Argentina &lt;strong&gt;3-2&lt;/strong&gt;&lt;/em&gt;). This is especially common for rare or out-of-vocabulary words such as &lt;em&gt;2-0&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;u&gt;Problem 2&lt;/u&gt;&lt;/strong&gt;: The summaries sometimes &lt;strong&gt;repeat themselves&lt;/strong&gt; (e.g. &lt;em&gt;Germany beat Germany beat Germany beat…&lt;/em&gt;)&lt;/p&gt;
+
+&lt;p&gt;In fact, these problems are common for RNNs in general.
+As always in deep learning, it’s difficult to explain &lt;em&gt;why&lt;/em&gt; the network exhibits any particular behavior. For those who are interested, I offer the following conjectures. If you’re not interested, skip ahead to the &lt;a href=&quot;#easier-copying-with-pointer-generator-networks&quot;&gt;solutions&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;u&gt;Explanation for Problem 1&lt;/u&gt;&lt;/strong&gt;: The sequence-to-sequence-with-attention model makes it &lt;em&gt;too difficult&lt;/em&gt; to copy a word &lt;em&gt;w&lt;/em&gt; from the source text.
+The network must somehow recover the original word after the information has passed through several layers of computation (including mapping &lt;em&gt;w&lt;/em&gt; to its &lt;a href=&quot;https://en.wikipedia.org/wiki/Word_embedding&quot;&gt;word embedding&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;In particular, if &lt;em&gt;w&lt;/em&gt; is a rare word that appeared infrequently during training and therefore has a poor word embedding (i.e. it is clustered with completely unrelated words), then &lt;em&gt;w&lt;/em&gt; is, from the perspective of the network, indistinguishable from many other words, thus impossible to reproduce.&lt;/p&gt;
+
+&lt;p&gt;Even if &lt;em&gt;w&lt;/em&gt; has a good word embedding, the network may still have difficulty reproducing the word.
+For example, RNN summarization systems often replace a name with another name (e.g. &lt;em&gt;Anna&lt;/em&gt; → &lt;em&gt;Emily&lt;/em&gt;) or a city with another city (e.g. &lt;em&gt;Delhi&lt;/em&gt; → &lt;em&gt;Mumbai&lt;/em&gt;).
+This is because the word embeddings for e.g. female names or Indian cities tend to cluster together, which may cause confusion when attempting to reconstruct the original word.&lt;/p&gt;
+
+&lt;p&gt;In short, this seems like an unnecessarily difficult way to perform a simple operation – copying – that is a fundamental operation in summarization.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;u&gt;Explanation for Problem 2&lt;/u&gt;&lt;/strong&gt;:
+Repetition may be caused by the decoder’s &lt;em&gt;over-reliance on the decoder input (i.e. previous summary word)&lt;/em&gt;, rather than storing longer-term information in the decoder state.
+This can be seen by the fact that a single repeated word commonly triggers an endless repetitive cycle.
+For example, a single substitution error &lt;em&gt;Germany beat &lt;strong&gt;Germany&lt;/strong&gt;&lt;/em&gt; leads to the catastrophic &lt;em&gt;Germany beat Germany beat Germany beat…&lt;/em&gt;, and not the less-wrong &lt;em&gt;Germany beat Germany 2-0&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;easier-copying-with-pointer-generator-networks&quot;&gt;Easier Copying with Pointer-Generator Networks&lt;/h3&gt;
+
+&lt;p&gt;Our solution for &lt;strong&gt;Problem 1&lt;/strong&gt; (inaccurate copying) is the &lt;em&gt;pointer-generator network&lt;/em&gt;.
+This is a hybrid network that can choose to copy words from the source via &lt;em&gt;pointing&lt;/em&gt;, while retaining the ability to &lt;em&gt;generate&lt;/em&gt; words from the fixed vocabulary.
+Let’s step through the diagram!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/img/pointer-gen.png&quot; alt=&quot;pointer-generator network&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This diagram shows the third step of the decoder, when we have so far generated the partial summary &lt;em&gt;Germany beat&lt;/em&gt;.
+As before, we calculate an &lt;em&gt;&lt;font color=&quot;#4285f4&quot;&gt;attention distribution&lt;/font&gt;&lt;/em&gt; and a &lt;em&gt;&lt;font color=&quot;#0f9d58&quot;&gt;vocabulary distribution&lt;/font&gt;&lt;/em&gt;.
+However, we also calculate the &lt;em&gt;&lt;font color=&quot;#f4b400&quot;&gt;generation probability&lt;/font&gt;&lt;/em&gt; &lt;script type=&quot;math/tex&quot;&gt;p_{\text{gen}}&lt;/script&gt;, which is a scalar value between 0 and 1.
+This represents the probability of &lt;em&gt;generating&lt;/em&gt; a word from the vocabulary, versus &lt;em&gt;copying&lt;/em&gt; a word from the source.
+The generation probability &lt;script type=&quot;math/tex&quot;&gt;p_{\text{gen}}&lt;/script&gt; is used to weight and combine the &lt;font color=&quot;#0f9d58&quot;&gt;vocabulary distribution&lt;/font&gt; &lt;script type=&quot;math/tex&quot;&gt;P_{\text{vocab}}&lt;/script&gt; (which we use for generating) and the &lt;font color=&quot;#4285f4&quot;&gt;attention distribution&lt;/font&gt; &lt;script type=&quot;math/tex&quot;&gt;a&lt;/script&gt; (which we use for pointing to source words &lt;script type=&quot;math/tex&quot;&gt;w_i&lt;/script&gt;) into the &lt;em&gt;final distribution&lt;/em&gt; &lt;script type=&quot;math/tex&quot;&gt;P_{\text{final}}&lt;/script&gt; via the following formula:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P_{\text{final}}(w) = p_{\text{gen}} P_{\text{vocab}}(w) + ( 1-p_{\text{gen}} ) \sum_{i: w_i = w} a_i&lt;/script&gt;
+
+&lt;p&gt;This formula just says that the probability of producing word &lt;script type=&quot;math/tex&quot;&gt;w&lt;/script&gt; is equal to the probability of generating it from the vocabulary (multiplied by the generation probability) plus the probability of pointing to it anywhere it appears in the source text (multiplied by the copying probability).&lt;/p&gt;
+
+&lt;p&gt;Compared to the sequence-to-sequence-with-attention system, the pointer-generator network has several advantages:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;The pointer-generator network makes it &lt;strong&gt;easy&lt;/strong&gt; to copy words from the source text. The network simply needs to put sufficiently large attention on the relevant word, and make &lt;script type=&quot;math/tex&quot;&gt;p_{\text{gen}}&lt;/script&gt; sufficiently large.&lt;/li&gt;
+  &lt;li&gt;The pointer-generator model is even able to copy &lt;strong&gt;out-of-vocabulary&lt;/strong&gt; words from the source text. This is a major bonus, enabling us to handle unseen words while also allowing us to use a smaller vocabulary (which requires less computation and storage space).&lt;/li&gt;
+  &lt;li&gt;The pointer-generator model is &lt;strong&gt;faster to train&lt;/strong&gt;, requiring fewer training iterations to achieve the same performance as the sequence-to-sequence attention system.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;In this way, the pointer-generator network is a &lt;em&gt;best of both worlds&lt;/em&gt;, combining both extraction (pointing) and abstraction (generating).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/img/highlighter_plus_pen_100h.png&quot; alt=&quot;highlighter plus pen&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;eliminating-repetition-with-coverage&quot;&gt;Eliminating Repetition with Coverage&lt;/h3&gt;
+
+&lt;p&gt;To tackle &lt;strong&gt;Problem 2&lt;/strong&gt; (repetitive summaries), we use a technique called &lt;em&gt;coverage&lt;/em&gt;.
+The idea is that we use the attention distribution to keep track of what’s been covered so far, and penalize the network for attending to same parts again.&lt;/p&gt;
+
+&lt;p&gt;On each timestep &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; of the decoder, the &lt;em&gt;coverage vector&lt;/em&gt; &lt;script type=&quot;math/tex&quot;&gt;c^t&lt;/script&gt; is the sum of all the attention distributions &lt;script type=&quot;math/tex&quot;&gt;a^{t'}&lt;/script&gt; so far:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;c^t = \sum_{t'=0}^{t-1}a^{t'}&lt;/script&gt;
+
+&lt;p&gt;In other words, the coverage of a particular source word is equal to the amount of attention it has received so far.
+In our running example, the coverage vector may build up like so (where yellow shading intensity represents coverage):&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/img/coverage.gif&quot; alt=&quot;example of coverage&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lastly, we introduce an extra loss term to penalize any overlap between the coverage vector &lt;script type=&quot;math/tex&quot;&gt;c^t&lt;/script&gt; and the new attention distribution &lt;script type=&quot;math/tex&quot;&gt;a^t&lt;/script&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\text{covloss}_t = \sum_i \min(a_i^t, c_i^t)&lt;/script&gt;
+
+&lt;p&gt;This discourages the network from attending to (thus summarizing) anything that’s already been covered.&lt;/p&gt;
+
+&lt;h3 id=&quot;example-output&quot;&gt;Example Output&lt;/h3&gt;
+
+&lt;p&gt;Let’s see a comparison of the systems on some real data!
+We trained and tested our networks on the &lt;em&gt;&lt;a href=&quot;http://cs.nyu.edu/~kcho/DMQA/&quot;&gt;CNN / Daily Mail&lt;/a&gt;&lt;/em&gt; dataset, which contains news articles paired with multi-sentence summaries.&lt;/p&gt;
+
+&lt;p&gt;The example below shows the source text (a news article about rugby) alongside the reference summary that &lt;a href=&quot;http://www.dailymail.co.uk/sport/rugbyunion/article-3027560/New-Zealand-international-Francis-Saili-signs-two-year-deal-Munster.html&quot;&gt;originally accompanied&lt;/a&gt; the article, plus the three automatic summaries produced by our three systems.
+By hovering your cursor over a word from one of the automatic summaries, you can view the attention distribution projected in &lt;span style=&quot;background-color: #f4e60d&quot;&gt;yellow&lt;/span&gt; on the source text.
+This tells you where the network was “looking” when it produced that word.&lt;/p&gt;
+
+&lt;p&gt;For the pointer-generator models, the value of the generation probability is also visualized in &lt;span style=&quot;background-color: #16e983&quot;&gt;green&lt;/span&gt;. Hovering the cursor over a word from one of those summaries will show you the value of the generation probability &lt;script type=&quot;math/tex&quot;&gt;p_{\text{gen}}&lt;/script&gt; for that word.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Note: you may need to zoom out using your browser window to view the demo all on one screen. Does not work for mobile.&lt;/em&gt;&lt;/p&gt;
+
+&lt;head&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/d3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/jquery-3.1.0.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/underscore-min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://localhost:4000/js/external/sprintf.min.js&quot;&gt;&lt;/script&gt;
+&lt;!-- &lt;link href='//fonts.googleapis.com/css?family=Courier' rel='stylesheet' type='text/css'&gt; --&gt;
+
+&lt;style&gt;
+#attnvis {
+  border: 3px solid lightgrey;
+  padding: 25px;
+  font-family: 'Courier';
+  position:relative;
+  margin: 10px;
+  font-size: 12px;
+}
+&lt;/style&gt;
+&lt;script&gt;
+
+json_fname = &quot;/attn_vis/attn_wts_saili.json&quot; // file containing the text and the weights
+
+bluehue = 217
+yellowhue = 56.4
+redhue = 5
+greenhue = 151
+
+function round(x, dp) {
+  // round a float to dp decimal places
+  var power_of_10 = Math.pow(10,dp)
+  return parseFloat(Math.round(x*power_of_10)/power_of_10).toFixed(dp)
+}
+
+function toColor(p, hue) {
+  // converts a scalar value p in [0,1] to a HSL color code string with base color hue
+  if (p&lt;0 || p&gt;1) {
+    throw sprintf(&quot;Error: p has value %.2f but should be in [0,1]&quot;, p)
+  }
+  var saturation = 100 // saturation percentage
+  p = 1-p // invert so p=0 is light and p=1 is dark
+  var min_lightness = 50 // minimum percentage lightness, i.e. darkest possible color
+  var lightness = (min_lightness + p*(100-min_lightness)) // lightness is proportional to p
+  return sprintf('hsl(%d,%s%%,%s%%)', hue, saturation, lightness)
+}
+
+function render_srctxt(div, attn_wts) {
+  // Render the article in given div. If attn_wts is not null, it is a vector of weights same length as number of article words (or less if truncated); we highlight the article accordingly.
+  var article_lst = gdata.article_lst
+  var startix = 0;
+  var endix = article_lst.length
+
+  div.html(''); // flush
+  for(var i=startix; i&lt;endix; i++) {
+    var word = article_lst[i]; // a string
+    var css = 'display:inline;'
+    if (attn_wts != null) {
+      var attn_wt = attn_wts[i];
+      var background_color = toColor(attn_wt, yellowhue);
+      css += 'background-color:' + background_color + &quot;;&quot;;
+    }
+    if (word.slice(0,2)==&quot;__&quot; &amp;&amp; word.slice(-2)==&quot;__&quot;){
+      word = word.slice(2,-2);
+      css += 'font-style: italic;'
+    }
+    var word_html = word + ' '
+
+    // write the word
+    var dnew = div.append('div');
+    dnew.attr('class', 'd')
+      .attr('style', css) // apply this style
+      .html(word_html)
+  }
+}
+
+
+function render_summary(div, summary_lst, attn_wts, gen_probs) {
+  // Render the summary in the given div.
+  // summary_lst is list of words
+  // attn_wts and gen_probs are optional
+  var startix = 0;
+  var endix = summary_lst.length;
+
+  div.html(''); // flush
+  for(var i=startix; i&lt;endix; i++) {
+    var word = summary_lst[i]; // a string
+    var css = 'display:inline;'
+    if (gen_probs==null) {
+      var gen_prob = null
+    } else {
+      var gen_prob = gen_probs[i];
+      var background_color = toColor(gen_prob, greenhue);
+      css += ('background-color:' + background_color + &quot;;&quot;);
+    }
+    if (word.slice(0,2)==&quot;__&quot; &amp;&amp; word.slice(-2)==&quot;__&quot;) {
+      word = word.slice(2,-2);
+      css += 'font-style: italic;'
+    }
+    if (word==&quot;dutch&quot; || word==&quot;irish&quot; || word==&quot;respective&quot; || word==&quot;prospects&quot; || word==&quot;[UNK]&quot;) {
+      css += 'color: red;'
+    }
+    if (word==&quot;.&quot;) {
+      word += &quot;&lt;br&gt;&quot;
+    }
+
+    var dnew = div.append('div');
+    dnew.html(word+' ') // this is the content
+      .attr('class', 'd')
+      .attr('style', css) // apply this style
+
+    if (attn_wts!=null) {
+      // add interactivity for mouseover decoder words
+      dnew.on('mouseover', getHandleMouseOver(attn_wts[i], gen_prob))
+        .on('mousemove', handleMouseMove)
+        .on('mouseout', handleMouseOut)
+    }
+  }
+}
+
+function getHandleMouseOver(attn_wts, gen_prob) {
+  // When you mouseover a decoder word, shows attention distribution on article and optionally, gen_prob tooltip
+  if (gen_prob==null) {
+    return function() {
+      render_srctxt(d3.select('#source_text'), attn_wts);
+    }
+  } else {
+    return function() {
+      render_srctxt(d3.select('#source_text'), attn_wts);
+      gtooltip.text(&quot;p_gen = &quot; + round(gen_prob, 3))
+      return gtooltip.style(&quot;visibility&quot;, &quot;visible&quot;);
+    }
+  }
+}
+
+function handleMouseMove() {
+  // When you move cursor over a decoder word, tooltip follows cursor
+  return gtooltip.style(&quot;top&quot;, (d3.event.pageY-30)+&quot;px&quot;).style(&quot;left&quot;,(d3.event.pageX+10)+&quot;px&quot;);
+}
+
+function handleMouseOut() {
+  // When you move cursor away from a decoder word, stop showing generation probability tooltip and attention distribution
+  render_srctxt(d3.select(&quot;#source_text&quot;), null);
+  return gtooltip.style(&quot;visibility&quot;, &quot;hidden&quot;);
+}
+
+function get_json_and_disp() {
+  // Retrieve the json data file and display the data
+  console.log(&quot;fetching &quot; + json_fname + &quot;...&quot;)
+
+  function json_success(data) {
+    // Displays the data
+    console.log(&quot;successfully loaded json file.&quot;)
+    gdata = data; // store globally
+    render_srctxt(d3.select(&quot;#source_text&quot;), null);
+    render_summary(d3.select(&quot;#ref&quot;), data.abstract_lst, null, null);
+    render_summary(d3.select(&quot;#baseline&quot;), data.decoded_lst_baseline, data.attn_wts_baseline, null);
+    render_summary(d3.select(&quot;#pgen_nocov&quot;), data.decoded_lst_pgen_nocov, data.attn_wts_pgen_nocov, data.gen_probs_pgen_nocov);
+    render_summary(d3.select(&quot;#pgen_cov&quot;), data.decoded_lst_pgen_cov, data.attn_wts_pgen_cov, data.gen_probs_pgen_cov);
+  }
+
+  function json_fail(d) {
+    console.log(&quot;failure to load.&quot; + json_fname)
+  }
+
+  $.getJSON(json_fname, json_success).fail(json_fail);
+}
+
+function start() {
+  console.log(&quot;starting...&quot;)
+  get_json_and_disp()
+
+  // Define a tooltip that we will use to display generation probability of a decoder word when you hover over it
+  var tooltip = d3.select(&quot;body&quot;)
+      .append(&quot;div&quot;)
+      .style(&quot;position&quot;, &quot;absolute&quot;)
+      .style(&quot;z-index&quot;, &quot;10&quot;)
+      .style(&quot;visibility&quot;, &quot;hidden&quot;)
+      .style(&quot;background&quot;, &quot;white&quot;)
+      .style(&quot;font-size&quot;, &quot;12px&quot;)
+      .style(&quot;font-family&quot;, &quot;Courier&quot;)
+      .style(&quot;border&quot;, &quot;2px solid lightgrey&quot;)
+      .text(&quot;a simple tooltip&quot;);
+  gtooltip = tooltip // global
+}
+
+&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body onload=&quot;start();&quot;&gt;
+  &lt;div id=&quot;attnvis&quot;&gt;
+    &lt;h3&gt;Source Text&lt;/h3&gt;
+    &lt;div id=&quot;source_text&quot;&gt;
+      source text goes here
+    &lt;/div&gt;
+    &lt;h3&gt;Reference summary&lt;/h3&gt;
+    &lt;div id=&quot;ref&quot;&gt;
+      reference summary goes here
+    &lt;/div&gt;
+    &lt;h3&gt;Sequence-to-sequence + attention summary&lt;/h3&gt;
+    &lt;div id=&quot;baseline&quot;&gt;
+      baseline model summary goes here
+    &lt;/div&gt;
+    &lt;h3&gt;Pointer-generator summary&lt;/h3&gt;
+    &lt;div id=&quot;pgen_nocov&quot;&gt;
+      pointer-generator model summary goes here
+    &lt;/div&gt;
+    &lt;h3&gt;Pointer-generator model + coverage summary&lt;/h3&gt;
+    &lt;div id=&quot;pgen_cov&quot;&gt;
+      pointer-generator + coverage model summary goes here
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;observations&quot;&gt;Observations:&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The basic sequence-to-sequence system is unable to copy out-of-vocabulary words like &lt;em&gt;Saili&lt;/em&gt;, outputting the unknown token &lt;font color=&quot;red&quot;&gt;[UNK]&lt;/font&gt; instead. By contrast the pointer-generator systems have no trouble copying this word.&lt;/li&gt;
+  &lt;li&gt;Though this story happens in &lt;em&gt;New Zealand&lt;/em&gt;, the basic sequence-to-sequence system mistakenly reports that the player is &lt;em&gt;&lt;font color=&quot;red&quot;&gt;Dutch&lt;/font&gt;&lt;/em&gt; and the team &lt;em&gt;&lt;font color=&quot;red&quot;&gt;Irish&lt;/font&gt;&lt;/em&gt; – perhaps reflecting the European bias of the training data. When it produced these words, the network was mostly attending to the names &lt;em&gt;Munster&lt;/em&gt; and &lt;em&gt;Francis&lt;/em&gt; – it seems the system struggled to copy these correctly.&lt;/li&gt;
+  &lt;li&gt;For reasons unknown, the phrase &lt;em&gt;a great addition to their backline&lt;/em&gt; is replaced with the nonsensical phrase &lt;em&gt;a great addition to their&lt;/em&gt; &lt;em&gt;&lt;font color=&quot;red&quot;&gt;respective prospects&lt;/font&gt;&lt;/em&gt; by the basic sequence-to-sequence system. Though the network was attending directly to the word &lt;em&gt;backline&lt;/em&gt;, it was not copied correctly.&lt;/li&gt;
+  &lt;li&gt;The basic pointer-generator summary repeats itself, and we see that it’s attending to the same parts of the source text each time. By contrast the pointer-generator + coverage model contains no repetition, and we can see that though it uses the word &lt;em&gt;Saili&lt;/em&gt; twice, the network attends to completely different occurrences of the word each time – evidence of the coverage system in action.&lt;/li&gt;
+  &lt;li&gt;The &lt;span style=&quot;background-color: #16e983&quot;&gt;green shading&lt;/span&gt; shows that the generation probability tends to be high whenever the network is editing the source text. For example, &lt;script type=&quot;math/tex&quot;&gt;p_{\text{gen}}&lt;/script&gt; is high when the network produces a period to shorten a sentence, and when jumping to another part of the text such as &lt;em&gt;&lt;strong&gt;will&lt;/strong&gt; move to the province…&lt;/em&gt; and &lt;em&gt;&lt;strong&gt;was&lt;/strong&gt; part of the new zealand under-20 side…&lt;/em&gt;.&lt;/li&gt;
+  &lt;li&gt;For all three systems, the attention distribution is fairly focused: usually looking at just one or two words at a time. Errors tend to occur when the attention is more scattered, indicating that perhaps the network is unsure what to do.&lt;/li&gt;
+  &lt;li&gt;All three systems attend to &lt;em&gt;Munster&lt;/em&gt; and &lt;em&gt;Francis&lt;/em&gt; when producing the first word of the summary. In general, the networks tend to seek out names to begin summaries.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;so-is-abstractive-summarization-solved&quot;&gt;So, is abstractive summarization solved?&lt;/h3&gt;
+
+&lt;p&gt;Not by a long way!
+Though we’ve shown that these improvements help to tame some of the wild behavior of Recurrent Neural Networks, there are still &lt;em&gt;many&lt;/em&gt; unsolved problems:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Though our system produces abstractive summaries, the wording is usually quite close to the original text. &lt;strong&gt;Higher-level abstraction&lt;/strong&gt; – such as more powerful, compressive paraphrasing – remains unsolved.&lt;/li&gt;
+  &lt;li&gt;Sometimes the network fails to focus on the &lt;strong&gt;core of the source text&lt;/strong&gt;, instead choosing to summarize a less important, secondary piece of information.&lt;/li&gt;
+  &lt;li&gt;Sometimes the network &lt;strong&gt;incorrectly composes fragments&lt;/strong&gt; of the source text – for example reporting that &lt;em&gt;Argentina beat Germany 2-0&lt;/em&gt; when in fact the opposite was true.&lt;/li&gt;
+  &lt;li&gt;Multi-sentence summaries sometimes &lt;strong&gt;fail to make sense a whole&lt;/strong&gt;, for example referring to an entity by pronoun (e.g. &lt;em&gt;she&lt;/em&gt;) without first introducing it (e.g. &lt;em&gt;German Chancellor Angela Merkel&lt;/em&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I believe the most important direction for future research is &lt;em&gt;interpretability&lt;/em&gt;.
+The attention mechanism, by revealing what the network is “looking at”, shines some precious light into the black box of neural networks, helping us to debug problems like repetition and copying.
+To make further advances, we need greater insight into &lt;em&gt;what&lt;/em&gt; RNNs are learning from text and &lt;em&gt;how&lt;/em&gt; that knowledge is represented.&lt;/p&gt;
+
+&lt;p&gt;But that’s a story for another day!
+In the meantime, check out &lt;a href=&quot;https://arxiv.org/pdf/1704.04368.pdf&quot;&gt;the paper&lt;/a&gt; for more details on our work.&lt;/p&gt;
 </description>
-        <pubDate>Sun, 30 Nov 2014 00:00:00 -0800</pubDate>
-      </item>
-    
-      <item>
-        <title>Feature images</title>
-        <link>http://localhost:4000/2014/11/29/feature-images.html</link>
-        <guid isPermaLink="true">http://localhost:4000/2014/11/29/feature-images.html</guid>
-        <description>&lt;p&gt;This is an example of a post which includes a feature image specified in the front matter of the post. The feature image spans the full-width of the page, and is shown with the title on permalink pages.&lt;/p&gt;
-</description>
-        <pubDate>Sat, 29 Nov 2014 00:00:00 -0800</pubDate>
-      </item>
-    
-      <item>
-        <title>Markdown and HTML</title>
-        <link>http://localhost:4000/2014/11/28/markdown-and-html.html</link>
-        <guid isPermaLink="true">http://localhost:4000/2014/11/28/markdown-and-html.html</guid>
-        <description>&lt;p&gt;Jekyll supports the use of &lt;a href=&quot;http://daringfireball.net/projects/markdown/syntax&quot;&gt;Markdown&lt;/a&gt; with inline HTML tags which makes it easier to quickly write posts with Jekyll, without having to worry too much about text formatting. A sample of the formatting follows.&lt;/p&gt;
-
-&lt;p&gt;Tables have also been extended from Markdown:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;First Header&lt;/th&gt;
-      &lt;th&gt;Second Header&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Content Cell&lt;/td&gt;
-      &lt;td&gt;Content Cell&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Content Cell&lt;/td&gt;
-      &lt;td&gt;Content Cell&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Here’s an example of an image, which is included using Markdown:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/sample_feature_img_2.png&quot; alt=&quot;Geometric pattern with fading gradient&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Highlighting for code in Jekyll is done using Pygments or Rouge. This theme makes use of Rouge by default.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// count to ten&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// count to twenty&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Type Theme uses KaTeX to display maths. Equations such as &lt;script type=&quot;math/tex&quot;&gt;S_n = a \times \frac{1-r^n}{1-r}&lt;/script&gt; can be displayed inline.&lt;/p&gt;
-
-&lt;p&gt;Alternatively, they can be shown on a new line:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;f(x) = \int \frac{2x^2+4x+6}{x-2}&lt;/script&gt;
-</description>
-        <pubDate>Fri, 28 Nov 2014 00:00:00 -0800</pubDate>
+        <pubDate>Sun, 16 Apr 2017 00:00:00 -0700</pubDate>
       </item>
     
   </channel>

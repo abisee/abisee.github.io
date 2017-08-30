@@ -7,6 +7,7 @@ Array.prototype.forEach.call(elements, function(element) {
 
      // Create span for KaTeX
      var katexElement = document.createElement('span');
+     katexElement.style = "text-align:center";
 
      // Support inline and display math
      if (element.type.indexOf('mode=display') != -1){
