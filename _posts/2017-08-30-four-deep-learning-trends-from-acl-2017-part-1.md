@@ -23,6 +23,8 @@ Though these difficult questions were at the forefront of the conference (the pr
 
 In this two-part post, I describe **four broad research trends** that I observed at the conference (and its co-located events) through papers, presentations and discussions. The content is guided entirely by my own research interests; accordingly it's mostly focused on deep learning, sequence-to-sequence models, and adjacent topics. This first part will explore two inter-related themes: [linguistic structure](#structure) and [word representations](#word_emb).
 
+[Green links](#) are ordinary hyperlinks, while [blue links](#){:class="citation" key="demo"} lead to papers, and offer bibliographic information when you hover over them (not supported on mobile).
+
 **Disclaimer:** This recap is *by no means* exhaustive, as I did not come close to reading every paper at ACL &ndash; consequently I'm sure there are many relevant papers that are not mentioned here. Secondly, I have done my best to accurately understand others' work, but if I've misrepresented any piece of work, let me know. Thirdly, as a person who is fairly new to the field, I may lack a longer perspective on some of these trends. If you have a more historically-informed perspective, I'd be interested to hear it.
 
 ## <a id="structure"></a>Trend 1: Linguistic Structure is Back

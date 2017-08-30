@@ -10,6 +10,8 @@ This is the second of a two-part post in which I describe **four broad research 
 
 In this part, I will discuss two more very inter-related themes: [interpretability](#interpretability) and [attention](#attention).
 
+Throughout, [green links](#) are ordinary hyperlinks, while [blue links](#){:class="citation" key="demo"} lead to papers, and offer bibliographic information when you hover over them (not supported on mobile).
+
 ## <a id="interpretability"></a> Trend 3: Interpretability
 
 I've been thinking about interpretability recently, and I'm not alone &ndash; among deep learning practitioners, the dreaded "black box" quality of neural networks makes them notoriously hard to control, hard to debug and thus hard to develop. From a non-researcher perspective however, there is an even more important reason to desire interpretability: **trust**.

@@ -1393,5 +1393,27 @@
     "title": "Enriching word vectors with subword information",
     "type": "article-journal",
     "volume": "5"
+  },
+  {
+    "author": [
+      {
+        "family": "A",
+        "given": "Author"
+      },
+      {
+        "family": "B",
+        "given": "Author"
+      }
+    ],
+		"short-venue": "ACL",
+    "id": "demo",
+    "issued": {
+      "date-parts": [
+        [
+          2017
+        ]
+      ]
+    },
+    "title": "An Example Paper Title"
   }
 ]

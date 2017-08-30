@@ -14,7 +14,7 @@ div.tooltip {
     text-align: center;
     width: 300px;
     padding: 5px;
-    background-color: $header-desc-background-color;
+    background-color: $citation-color;
     border: 0px;
     border-radius: 5px;
     pointer-events: none;
@@ -36,6 +36,9 @@ article {
   }
   a:hover {
     @extend %link-hover;
+  }
+  a.citation:hover {
+    @extend %citation-hover;
   }
   .footnotes {
     font-size: 0.9em;
