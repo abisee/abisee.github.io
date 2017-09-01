@@ -81,18 +81,21 @@ header {
   display: flex;
   float: left;
 
-  a, .page-title {
+  a, .page-title, .page-subtitle {
     display: inline-block;
   }
 
-  .page-title {
-    font-size: 1.2em;
+  .page-title, .page-subtitle {
     margin-bottom: 1em;
     width: 100%;
   }
 
+  .page-title {
+    font-size: 1.2em;
+  }
+
   a {
-    padding: 2em 3em;
+    padding: 2em 2em;
     border: 1px solid rgba(255, 255, 255, 0);
     text-align: center;
     width: 50%;

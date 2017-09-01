@@ -21,6 +21,9 @@ layout: default
     {% if page.previous.url %}
     <a id="prev-post" href="{{ site.baseurl }}{{ page.previous.url }}">
       <span class="page-title">{{ page.previous.title }}</span>
+      {% if page.previous.subtitle %}
+        <span class="page-subtitle">{{ page.previous.subtitle }}</span>
+      {% endif %}
       <span class="nav-label">
         <i class="fa fa-chevron-left"></i> {{ site.theme_settings.str_prev }}
       </span>
@@ -29,6 +32,9 @@ layout: default
     {% if page.next.url %}
     <a id="next-post" href="{{ site.baseurl }}{{ page.next.url }}">
        <span class="page-title">{{ page.next.title }}</span>
+       {% if page.next.subtitle %}
+         <span class="page-subtitle">{{ page.next.subtitle }}</span>
+       {% endif %}
        <span class="nav-label">
         {{ site.theme_settings.str_next }} <i class="fa fa-chevron-right"></i>
        </span>
