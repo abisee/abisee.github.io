@@ -6,7 +6,9 @@ subtitle: "Part Two: Interpretability and Attention"
 
 {% include citation.html %}
 
-This is the second of a two-part post in which I describe **four broad research trends** that I observed at ACL 2017. In [Part One]({{ site.baseurl }}{% post_url 2017-08-30-four-deep-learning-trends-from-acl-2017-part-1 %}) I explored the shifting assumptions we make about language, both at the sentence and the word level, and how these shifts are prompting both a comeback of linguistic structure and a re-evaluation of word embeddings.
+[Click here for Part One.]({{ site.baseurl }}{% post_url 2017-08-30-four-deep-learning-trends-from-acl-2017-part-1 %}){:class="largelink"}
+
+This is the second of a two-part post in which I describe **four broad research trends** that I observed at [ACL 2017](http://acl2017.org/). In Part One I explored the shifting assumptions we make about language, both at the sentence and the word level, and how these shifts are prompting both a comeback of linguistic structure and a re-evaluation of word embeddings.
 
 In this part, I will discuss two more very inter-related themes: [interpretability](#interpretability) and [attention](#attention).
 
