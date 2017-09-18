@@ -12,7 +12,7 @@ This is the second of a two-part post in which I describe **four broad research 
 
 In this part, I will discuss two more very inter-related themes: [interpretability](#interpretability) and [attention](#attention).
 
-Throughout, [green links](#) are ordinary hyperlinks, while [blue links](#){:class="citation" key="demo"} lead to papers, and offer bibliographic information when you hover over them (not supported on mobile).
+Throughout, [green links](#!) are ordinary hyperlinks, while [blue links](#!){:class="citation" key="demo"} lead to papers, and offer bibliographic information when you hover over them (not supported on mobile).
 
 ## <a id="interpretability"></a> Trend 3: Interpretability
 
