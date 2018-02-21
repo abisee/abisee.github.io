@@ -8,6 +8,8 @@ subtitle: "Part One: Linguistic Structure and Word Embeddings"
 
 *This is a two-part post. [Click here for Part Two.]({{ site.baseurl }}{% post_url 2017-08-30-four-deep-learning-trends-from-acl-2017-part-2 %})*
 
+*[Click here](https://medium.com/@cyeninesky3/%E5%BE%9Eacl-2017-%E7%9C%8B%E5%88%B0%E5%9B%9B%E5%80%8B%E5%9C%A8%E8%87%AA%E7%84%B6%E8%AA%9E%E8%A8%80%E8%99%95%E7%90%86-nlp-%E7%9A%84%E8%B6%A8%E5%8B%A2-3163c6a91c50) to read a shortened version of this post translated to Chinese.*
+
 ## <a id="intro"></a>Introduction
 
 ["NLP is booming"](https://www.slideshare.net/aclanthology/joakim-nivre-2017-presidential-address-acl-2017-challenges-for-acl/4?src=clipshare), declared Joakim Nivre at the presidential address of [ACL 2017](http://acl2017.org/), which I attended in Vancouver earlier this month. As evidenced by the throngs of attendees, interest in NLP is at an all-time high &ndash; an increase that is chiefly due to the successes of the deep learning renaissance, which recently swept like a tidal wave over the field.
@@ -23,7 +25,9 @@ Though these difficult questions were at the forefront of the conference (the pr
 
 ## About this post
 
+<!--excerpt.start-->
 In this two-part post, I describe **four broad research trends** that I observed at the conference (and its co-located events) through papers, presentations and discussions. The content is guided entirely by my own research interests; accordingly it's mostly focused on deep learning, sequence-to-sequence models, and adjacent topics. This first part will explore two inter-related themes: [linguistic structure](#structure) and [word representations](#word_emb).
+<!--excerpt.end-->
 
 [Green links](#!) are ordinary hyperlinks, while [blue links](#!){:class="citation" key="demo"} lead to papers, and offer bibliographic information when you hover over them (not supported on mobile).
 

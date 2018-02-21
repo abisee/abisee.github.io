@@ -29,7 +29,10 @@ layout: default
         </p>
       </header>
       <div class="excerpt">
-        {{ post.excerpt }}
+        {% if post.content contains '<!--excerpt.start-->' and post.content contains '<!--excerpt.end-->' %}
+          {{ post.content | split:'<!--excerpt.start-->' | last | split: '<!--excerpt.end-->' | first }}
+        {% endif %}
+        <br>
         <a class="button" href="{{ post.url | prepend: site.baseurl }}">
           {{ site.theme_settings.str_continue_reading }}
         </a>
