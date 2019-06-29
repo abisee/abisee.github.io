@@ -5,8 +5,10 @@ title: "Taming Recurrent Neural Networks for Better Summarization"
 
 
 <!--excerpt.start-->
-*This is a blog post about our latest paper, [Get To The Point: Summarization with Pointer-Generator Networks](https://arxiv.org/pdf/1704.04368.pdf), to appear at [ACL 2017](http://acl2017.org/). The code is available [here](https://github.com/abisee/pointer-generator).*
+*This blog post is about the [ACL 2017](http://acl2017.org/) paper __Get To The Point: Summarization with Pointer-Generator Networks__ by Abigail See, Peter J Liu, and Christopher Manning.* [[paper](https://arxiv.org/pdf/1704.04368.pdf)] [[code](https://github.com/abisee/pointer-generator)]
 <!--excerpt.end-->
+
+---
 
 The internet age has brought unfathomably massive amounts of information to the fingertips of billions -- if only we had time to read it.
 Though our lives have been transformed by ready access to limitless data, we also find ourselves ensnared by [information overload](https://en.wikipedia.org/wiki/Information_overload).
