@@ -53,12 +53,10 @@
 
   {% if page.subtitle %}
   <meta name="twitter:description" content="{{ page.subtitle }}">
+  {% elsif page.excerpt %}
+  <meta name="twitter:description" content="{{ page.excerpt }}">
   {% else %}
-    {% if page.excerpt %}
-    <meta name="twitter:description" content="{{ page.excerpt }}">
-    {% else %}
-    <meta name="twitter:description" content="{{ site.description }}">
-    {% endif %}
+  <meta name="twitter:description" content="{{ site.description }}">
   {% endif %}
 
   {% if page.image %}
