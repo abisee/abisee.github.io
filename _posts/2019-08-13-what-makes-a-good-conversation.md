@@ -33,14 +33,14 @@ While **neural Language Model (LM)** based approaches have been successful for t
 More broadly, neural LMs seem to struggle to make the high-level decisions that are necessary to sustain a long story or dialogue.
 
 One way to address these open-ended NLG issues is to add **control** -- that is, the ability to specify desired attributes of the generated text at test time.
-For example, if we can control the repetitiveness or genericness of the text, we can fix those problems.
+For example, if we can control the repetitiveness or genericness of the text, we can fix those related problems.
 Furthermore, if we can control certain high-level attributes of the text (e.g. whether to change the subject, or whether to ask a question), then perhaps we can make some high-level decisions _for_ the neural LM.
 
 The last part of our NLG task spectrum is **evaluation**.
 For the tasks on the left, evaluation is difficult.
 Useful automatic metrics exist, though they are imperfect -- the MT and summarization communities continue to get value from BLEU and ROUGE, despite their well-documented problems.
 For _open-ended_ NLG however, evaluation is even more difficult.
-In the absence of a useful automatic metric to capture overall quality, we rely on human evaluation.
+In the absence of useful automatic metrics to capture overall quality, we rely on human evaluation.
 Even that is complex -- when evaluating dialogue, should we evaluate single turns or multiple turns?
 Should evaluators take part in conversations interactively or not?
 What questions should be asked, and how should they be phrased?
@@ -81,10 +81,10 @@ In particular, the winning team _Lost in Conversation_ used a finetuned version 
 
 We use a simple baseline -- a standard LSTM-based sequence-to-sequence architecture with attention.
 On each turn, the bot's persona is concatenated with the dialogue history to form the input sequence, and the output is generated using beam search.[^beam]
+We pretrain this model on 2.5 million Twitter message/response pairs, then finetune it on PersonaChat.
 
 [^beam]: Since we carried out this research in 2018, it has become clearer that likelihood-maximizing decoding algorithms (such as greedy decoding and beam search) are a key cause of repetitive and generic text ([Holtzman et al, 2019](https://arxiv.org/pdf/1904.09751.pdf)), and that sampling-based methods such as top-*k* sampling ([Fan et al 2018](https://arxiv.org/abs/1805.04833), [Radford et al 2019](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)) may fare better for open-ended NLG tasks. In retrospect, beam search is perhaps _not_ the best choice of decoding algorithm for our chitchat setting. Though we didn't experiment with sampling-based decoding algorithms, it would be interesting to see whether the control methods described here are as reliable under sampling-based decoding.
 
-We pretrain this model on 2.5 million Twitter message/response pairs, then finetune it on PersonaChat.
 
 ### Four controllable attributes of text
 
@@ -175,7 +175,7 @@ In the example below, we increase the probability of rarer words, thus choosing 
   width=700
 %}
 
-This method requires no special training and can be applied to modify any decoding algorithm (beam search, greedy search, top-k sampling, etc).
+This method requires no special training and can be applied to modify any decoding algorithm (beam search, greedy search, top-*k* sampling, etc).
 Weighted Decoding can be used to control multiple attributes at once, and it can be applied alongside Conditional Training.
 
 ### Research Question 1: How effectively can we control the attributes?
@@ -186,7 +186,7 @@ However, the method yields degenerate output when the feature weight is too high
 {% include image.html
   img="controllable_dialogue/controlling_response_rel.png"
   alt="Example responses with varied response-relatedness"
-  caption="Controlling response-relatedness using Weighted Decoding (WD). By increasing response-relatedness, we obtain a more on-topic response (<i>I do, usually at starbucks</i>)."
+  caption="Controlling response-relatedness with Weighted Decoding (WD). By increasing response-relatedness, we obtain a more on-topic response (<i>I do, usually at starbucks</i>)."
   width=600
 %}
 
@@ -198,7 +198,7 @@ In particular, it usually produces output that is well-formed and has the desire
 {% include image.html
   img="controllable_dialogue/controlling_specificity.png"
   alt="Example responses with varied specificity"
-  caption="Controlling specificity using Weighted Decoding (WD) and Conditional Training (CT). By increasing specificity, we obtain more interesting, personalized responses."
+  caption="Controlling specificity with Weighted Decoding (WD) and Conditional Training (CT). By increasing specificity, we obtain more interesting, personalized responses."
   width=600
 %}
 
@@ -216,8 +216,8 @@ However, this does demonstrate the importance of multi-turn evaluation (as oppos
 {% include image.html
   img="controllable_dialogue/norep_base.png"
   alt="An example chat between the bot and a human"
-  caption="After reducing repetition, our bot has mostly safe but generic conversations"
-  width=300
+  caption="After reducing repetition, our bot has mostly safe but generic conversations."
+  width=350
 %}
 
 After reducing repetition, we find that by __increasing question-asking__ rate to 65.7%, we achieve better <font color="#0f9d58">inquisitiveness, interestingness</font> and <font color="#0f9d58">engagingness</font>.
@@ -226,8 +226,8 @@ Interestingly, this rate is higher than both the baseline (50%) and humans (28.8
 {% include image.html
   img="controllable_dialogue/ques.png"
   alt="An example chat between the bot and a human"
-  caption="Our increased question-asking bot is more engaging, often commenting and asking a question in the same turn"
-  width=300
+  caption="Our increased question-asking bot is more engaging, often commenting and asking a question in the same turn."
+  width=350
 %}
 
 By __increasing specificity__ to around human levels, we obtain improvements to <font color="#0f9d58">interestingness, listening</font> and <font color="#0f9d58">engagingness</font>.
@@ -236,23 +236,23 @@ However, finding the right balance is difficult -- increasing specificity too mu
 {% include image.html
   img="controllable_dialogue/spec2.png"
   alt="An example chat between the bot and a human"
-  caption="Our increased specificity bot typically offers more interesting details about itself"
-  width=300
+  caption="Our increased specificity bot typically offers more interesting details about itself."
+  width=350
 %}
 
 Lastly, we were unable to obtain an improvement in any of our evaluation categories by controlling __response-relatedness__.
-Though we hoped that increasing response-relatedness would create a chatbot that appears more attentive, friendly and interested in the user, crowdworkers did not rate the 'more responsive' bots well.
-In particular, these bots received lower scores for <font color="#db4437">fluency</font> and <font color="#db4437">making sense</font>, and consequently lower overall scores for <font color="#db4437">humanness</font> and <font color="#db4437">engagingness</font> too.
+Though we hoped that increasing response-relatedness would create a chatbot that appears more attentive, friendly and interested in the user, crowdworkers did not rate the 'more responsive' bots better overall.
+In particular, these bots received lower average scores for <font color="#db4437">fluency</font> and <font color="#db4437">making sense</font>, and consequently lower overall scores for <font color="#db4437">humanness</font> and <font color="#db4437">engagingness</font> too.
 As with specificity, attempting higher response-relatedness is a risky strategy, as it increases the chance of the bot saying something that sounds unnatural or nonsensical.
 
 {% include image.html
   img="controllable_dialogue/resp.png"
   alt="An example chat between the bot and a human"
-  caption="Our increased-responsiveness bot sometimes gives good, more relevant responses (e.g. <i>costco</i>), but tends to mirror the user too much (<i>relax</i>) and makes false connections (<i>mickey d's</i> is slang for McDonalds, which is unrelated to Mickey Mouse)"
-  width=300
+  caption="Our increased-responsiveness bot can give good relevant responses (e.g. <i>costco</i>), but tends to mirror the user too much (<i>relax</i>) and makes false connections (<i>mickey d's</i> is slang for McDonalds, which is unrelated to Mickey Mouse)."
+  width=350
 %}
 
-You can browse more examples of conversations by following the instructions [here](https://parl.ai/projects/controllable_dialogue).
+You can browse more example conversations by following the instructions [here](https://parl.ai/projects/controllable_dialogue).
 
 ### Research Question 3: Can we use control to make a better chatbot overall?
 
@@ -284,7 +284,7 @@ However, on the __humanness__ (i.e. Turing test) metric, all our models are __no
 These results show that __our bots are (almost) as engaging as humans, but they're clearly non-human__.
 How is this possible?
 There are many ways a bot can reveal itself as non-human -- for example, through logical errors, unnatural style, or poor social skills -- but despite these flaws, the bot can still be enjoyable.
-As a concrete example, the last chat in the previous section was rated enjoyable (3/4) but clearly non-human (1/4).
+As a concrete example, the last chat in the previous section was rated enjoyable (3/4) but obviously non-human (1/4).
 
 Clearly, our results demonstrate that __engagingness is not the same as humanness__.
 While both metrics are frequently used alone for evaluation, our results show the importance of measuring both (or at least, thinking carefully about which you want to use).
