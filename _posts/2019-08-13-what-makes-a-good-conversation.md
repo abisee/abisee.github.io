@@ -2,6 +2,7 @@
 layout: post
 title: "What makes a good conversation?"
 subtitle: "How controllable attributes affect human judgments"
+summary_image: "/img/controllable_dialogue/NLG_spectrum.png"
 ---
 
 <!--excerpt.start-->
