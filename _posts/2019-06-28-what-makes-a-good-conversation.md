@@ -2,7 +2,6 @@
 layout: post
 title: "What makes a good conversation?"
 subtitle: "How controllable attributes affect human judgments"
-hide: yes
 ---
 
 <!--excerpt.start-->
@@ -20,7 +19,7 @@ I think of Natural Language Generation (NLG) tasks as existing on the following 
 
 {% include image.html
   img="controllable_dialogue/NLG_spectrum.png"
-  alt="TODO"
+  alt="Diagram of natural language generation tasks"
   caption=""
   width=600
 %}
@@ -71,7 +70,7 @@ Our task is to build a chatbot that can converse with a human in this setting.
 
 {% include image.html
   img="controllable_dialogue/personachat.png"
-  alt="TODO"
+  alt="Example of a PersonaChat conversation"
   caption="In the PersonaChat task, both participants are supplied with a persona and instructed to get to know each other."
   width=600
 %}
@@ -83,9 +82,7 @@ In particular, the winning team _Lost in Conversation_ used a finetuned version 
 We use a simple baseline -- a standard LSTM-based sequence-to-sequence architecture with attention.
 On each turn, the bot's persona is concatenated with the dialogue history to form the input sequence, and the output is generated using beam search.[^beam]
 
-[^beam]: Since we carried out this research in 2018, it has become clearer that likelihood-maximizing decoding algorithms (such as greedy decoding and beam search) are a key cause of repetitive and generic text ([Holtzman et al, 2019](https://arxiv.org/pdf/1904.09751.pdf)), and that sampling-based methods (such as top-*k* sampling) may fare better for open-ended NLG tasks. In retrospect, beam search is perhaps _not_ the best choice of decoding algorithm for our chitchat setting. Though we didn't experiment with sampling-based decoding algorithms, it would be interesting to see whether the control methods described here are as reliable under sampling-based decoding.
-
-<!-- TODO add more links from here https://medium.com/huggingface/how-to-build-a-state-of-the-art-conversational-ai-with-transfer-learning-2d818ac26313 -->
+[^beam]: Since we carried out this research in 2018, it has become clearer that likelihood-maximizing decoding algorithms (such as greedy decoding and beam search) are a key cause of repetitive and generic text ([Holtzman et al, 2019](https://arxiv.org/pdf/1904.09751.pdf)), and that sampling-based methods such as top-*k* sampling ([Fan et al 2018](https://arxiv.org/abs/1805.04833), [Radford et al 2019](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)) may fare better for open-ended NLG tasks. In retrospect, beam search is perhaps _not_ the best choice of decoding algorithm for our chitchat setting. Though we didn't experiment with sampling-based decoding algorithms, it would be interesting to see whether the control methods described here are as reliable under sampling-based decoding.
 
 We pretrain this model on 2.5 million Twitter message/response pairs, then finetune it on PersonaChat.
 
@@ -93,7 +90,7 @@ We pretrain this model on 2.5 million Twitter message/response pairs, then finet
 
 {% include image.html
   img="controllable_dialogue/controllable_attributes.png"
-  alt="TODO"
+  alt="Diagram of the controllable text attributes"
   caption="We control four attributes of the output text."
   width=600
 %}
@@ -112,7 +109,7 @@ To evaluate our chatbots, we ask crowdworkers to chat with our bots for six turn
 
 {% include image.html
   img="controllable_dialogue/quality_aspects_low.png"
-  alt="TODO"
+  alt="Diagram of the lower-level aspects of conversational quality"
   caption="We collect human evaluations for six lower-level aspects of conversational quality."
   width=600
 %}
@@ -122,7 +119,7 @@ The others -- **interestingness**, **listening**, and **inquisitiveness** -- enc
 
 {% include image.html
   img="controllable_dialogue/quality_aspects_high.png"
-  alt="TODO"
+  alt="Diagram of the overall judgments of conversational quality"
   caption="We also collect human evaluations for two definitions of overall quality - humanness and engagingness."
   width=600
 %}
@@ -132,8 +129,6 @@ To measure **humanness**, we ask the crowdworker whether they think they spoke t
 To measure **engagingness**, we ask the crowdworker how much they enjoyed the conversation.
 
 Many dialogue studies use either engagingness or humanness as a single stand-alone quality metric.
-<!-- need to cite?
-TODO: look over how much we should be citing in general -->
 In particular, in the ConvAI2 competition, only engagingness was used for human evaluation.
 Given that we use the exact same wording of the engagingness question, our evaluation is a _superset_ of ConvAI2's.
 
@@ -151,7 +146,7 @@ For example, to control specificity, we might set $$z$$ to HIGH or LOW to get a 
 
 {% include image.html
   img="controllable_dialogue/CT.gif"
-  alt="TODO"
+  alt="Animation showing how to control text output with Conditional Training"
   caption="Controlling specificity with Conditional Training"
   width=700
 %}
@@ -175,7 +170,7 @@ In the example below, we increase the probability of rarer words, thus choosing 
 
 {% include image.html
   img="controllable_dialogue/WD.gif"
-  alt="TODO"
+  alt="Animation showing how to control text output with Weighted Decoding"
   caption="Controlling specificity with Weighted Decoding"
   width=700
 %}
@@ -190,7 +185,7 @@ However, the method yields degenerate output when the feature weight is too high
 
 {% include image.html
   img="controllable_dialogue/controlling_response_rel.png"
-  alt="TODO"
+  alt="Example responses with varied response-relatedness"
   caption="Controlling response-relatedness using Weighted Decoding (WD). By increasing response-relatedness, we obtain a more on-topic response (<i>I do, usually at starbucks</i>)."
   width=600
 %}
@@ -202,7 +197,7 @@ In particular, it usually produces output that is well-formed and has the desire
 
 {% include image.html
   img="controllable_dialogue/controlling_specificity.png"
-  alt="TODO"
+  alt="Example responses with varied specificity"
   caption="Controlling specificity using Weighted Decoding (WD) and Conditional Training (CT). By increasing specificity, we obtain more interesting, personalized responses."
   width=600
 %}
@@ -218,18 +213,46 @@ We find that __reducing repetition__ gives large boosts to <font color="#0f9d58"
 This is not surprising, as our beam search baseline model repeats itself a lot (especially across utterances), creating a very frustrating user experience.
 However, this does demonstrate the importance of multi-turn evaluation (as opposed to single response evaluation), as it is necessary to detect across-utterance repetition.
 
+{% include image.html
+  img="controllable_dialogue/norep_base.png"
+  alt="An example chat between the bot and a human"
+  caption="After reducing repetition, our bot has mostly safe but generic conversations"
+  width=300
+%}
+
+After reducing repetition, we find that by __increasing question-asking__ rate to 65.7%, we achieve better <font color="#0f9d58">inquisitiveness, interestingness</font> and <font color="#0f9d58">engagingness</font>.
+Interestingly, this rate is higher than both the baseline (50%) and humans (28.8%) -- implying that, in chitchat settings such as these, more question-asking is often received well.
+
+{% include image.html
+  img="controllable_dialogue/ques.png"
+  alt="An example chat between the bot and a human"
+  caption="Our increased question-asking bot is more engaging, often commenting and asking a question in the same turn"
+  width=300
+%}
+
 By __increasing specificity__ to around human levels, we obtain improvements to <font color="#0f9d58">interestingness, listening</font> and <font color="#0f9d58">engagingness</font>.
 However, finding the right balance is difficult -- increasing specificity too much leads to lower <font color="#db4437">making sense</font> and <font color="#db4437">fluency</font> scores.
 
-We also find that by __increasing question-asking__ rate to 65.7%, we achieve better <font color="#0f9d58">inquisitiveness, interestingness</font> and <font color="#0f9d58">engagingness</font>.
-Interestingly, this rate is higher than both the baseline (50%) and humans (28.8%) -- implying that, in chitchat settings such as these, more question-asking is often received well.
+{% include image.html
+  img="controllable_dialogue/spec2.png"
+  alt="An example chat between the bot and a human"
+  caption="Our increased specificity bot typically offers more interesting details about itself"
+  width=300
+%}
 
 Lastly, we were unable to obtain an improvement in any of our evaluation categories by controlling __response-relatedness__.
 Though we hoped that increasing response-relatedness would create a chatbot that appears more attentive, friendly and interested in the user, crowdworkers did not rate the 'more responsive' bots well.
 In particular, these bots received lower scores for <font color="#db4437">fluency</font> and <font color="#db4437">making sense</font>, and consequently lower overall scores for <font color="#db4437">humanness</font> and <font color="#db4437">engagingness</font> too.
 As with specificity, attempting higher response-relatedness is a risky strategy, as it increases the chance of the bot saying something that sounds unnatural or nonsensical.
 
-<!-- TODO: add example conversations or talk about where they can be found, for this section -->
+{% include image.html
+  img="controllable_dialogue/resp.png"
+  alt="An example chat between the bot and a human"
+  caption="Our increased-responsiveness bot sometimes gives good, more relevant responses (e.g. <i>costco</i>), but tends to mirror the user too much (<i>relax</i>) and makes false connections (<i>mickey d's</i> is slang for McDonalds, which is unrelated to Mickey Mouse)"
+  width=300
+%}
+
+You can browse more examples of conversations by following the instructions [here](https://parl.ai/projects/controllable_dialogue).
 
 ### Research Question 3: Can we use control to make a better chatbot overall?
 
@@ -239,7 +262,7 @@ __near-human engagingness__ (i.e. enjoyability) ratings.
 
 {% include image.html
   img="controllable_dialogue/engagingness.png"
-  alt="TODO"
+  alt="Bar chart showing the increased engagingness of the models"
   caption="Engagingness (i.e. enjoyability) ratings for humans and selected models."
   width=600
 %}
@@ -253,68 +276,65 @@ However, on the __humanness__ (i.e. Turing test) metric, all our models are __no
 
 {% include image.html
   img="controllable_dialogue/humanness.png"
-  alt="TODO"
+  alt="Bar chart showing the limited humanness of the models"
   caption="Humanness (i.e. Turing test) ratings for humans and selected models."
   width=600
 %}
 
-We've observed that __our bots are (almost) as engaging as humans, but they're clearly non-human__.
-What does this mean?
+These results show that __our bots are (almost) as engaging as humans, but they're clearly non-human__.
+How is this possible?
+There are many ways a bot can reveal itself as non-human -- for example, through logical errors, unnatural style, or poor social skills -- but despite these flaws, the bot can still be enjoyable.
+As a concrete example, the last chat in the previous section was rated enjoyable (3/4) but clearly non-human (1/4).
 
-Firstly, our results demonstrate that __engagingness is not the same as humanness__.
+Clearly, our results demonstrate that __engagingness is not the same as humanness__.
 While both metrics are frequently used alone for evaluation, our results show the importance of measuring both (or at least, thinking carefully about which you want to use).
 
-Secondly, we suspect that on this task, the __human 'engagingness' performance may be artificially low__.
+Another possible explanation for our finding, is that the __human 'engagingness' performance may be artificially low__.
 We observe that crowdworkers chatting for money (using artificial personas) seem to be less engaging conversationalists than people who are genuinely chatting for fun.
 Though we did not formally test this hypothesis, it may explain why the human-level engagingness scores are easy to match.
 
-<!-- Show example of engaging but not human-like bot? Show example of human-like but not engaging crowdworker? -->
-
 ### Conclusions
 
-<!-- TODO: jason thinks the conclusions could be clearer overall -->
-
-* **Control is a good idea** for your neural sequence generation dialogue system. Using simple control mechanisms, we matched the performance of a GPT-based contest winner. We expect these techniques would yield even better results when applied to a highly pretrained language model like GPT.
+* If you're building an end-to-end neural sequence generation dialogue system, then **control is probably a good idea**. Using simple control mechanisms, we matched the performance of a GPT-based contest winner. We expect these techniques would yield even better results when applied to a highly pretrained language model like GPT.
+<br><br>
 * If you want to control a fairly **simple attribute** of the output text, and you have sufficient **training examples** of the attribute, then Conditional Training is probably a good idea.
+<br><br>
 * If you **don't have the training data**, or the attribute is **harder to learn**, then Weighted Decoding may be more effective -- though you need to be careful as the method can produce degenerate output.
+<br><br>
 * **Multi-turn phenomena** (such as repetition across utterances, and question-asking frequency) are important to conversations – so we need **multi-turn eval** to detect them.
+<br><br>
 * **Engagingness is not the same as humanness**, so think carefully about which to use as an overall quality metric.
+<br><br>
 * We suspect that **paid crowdworkers are not very engaging conversationalists**, and perhaps aren't even good judges of whether a conversation is engaging.
 Humans chatting for fun may be a better source of genuine judgments.
+<br><br>
 * Whether you're a human or a bot: **Don't repeat yourself. Don't be boring. Ask more questions.**
+<br><br>
 
 ### Outlook
 
 This project involved a lot of manual tuning of control parameters, as we attempted to find the best combination of settings for the four attributes.
-This was a long and laborious process, requiring not only many expensive hours of crowdworker evaluation time, but also many hours of our own evaluation time as we chatted to the bots.
+This was a long and laborious process, requiring not only many hours of crowdworker evaluation time, but also many hours of our own evaluation time as we chatted to the bots.
 
 I'm reminded of [QWOP](http://www.foddy.net/Athletics.html) -- a simple game in which you press four buttons (Q, W, O and P) to control the individual muscles in a runner's legs.
 Though the aim of the game is to run as far as possible, the entertainment comes from the absurd difficulty of the task.
 
 {% include image.html
   img="controllable_dialogue/qwop.gif"
-  alt="TODO"
+  alt="Animation from the game QWOP"
   caption="QWOP is a game in which you attempt to run by pressing four buttons that each control a different part of the runner's legs."
   width=400
 %}
 
 Manually controlling four low-level text attributes is _not_ the most principled, nor the most scalable way to build a good conversational dialogue system -- just as manually controlling the four parts of the runner's legs is not the most principled way to run a marathon.
-<!-- Jason thinks I should address the question of why not autotune -->
 However, for the neural sequence generation systems we are using today, this kind of control can be useful and effective -- getting us a little further down the track, if not all the way to the finish line.
-
-
-<!-- TODO: say something about:
-The attributes we controlled were all easy to define and measure automatically. there's a reason we can't do harder stuff. yejin choi said that maybe the most important thing right now is to learn to automatically measure harder things like coherence.
-what about dialogue manager?
--->
-
 
 
 ---
 
 *For further details on this work, check out the [paper](https://www.aclweb.org/anthology/N19-1170).*
 
-*If you'd like to chat to the bots yourself, follow the instructions [here](https://parl.ai/projects/controllable_dialogue) -- it only takes a few minutes to set up!*
+*To chat to the bots yourself, follow the instructions [here](https://parl.ai/projects/controllable_dialogue) -- it only takes a few minutes to set up!*
 
 ---
 
