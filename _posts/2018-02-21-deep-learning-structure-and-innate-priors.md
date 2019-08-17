@@ -79,7 +79,9 @@ By contrast, most Machine Learning systems today learn from externally-provided 
 
 
 ### On language
-In the final minutes of the discussion, LeCun, perhaps being a little provocative, claimed language is "not that complicated", nor that crucial to achieving general intelligence ([59:54](javascript:goTo(59,54))). To support this, he appealed to the fact that orangutans are almost as intelligent as humans, yet they have no language. In response, Manning leaped to the defense of language! Without language, he claimed, is crucial to general intelligence, because language is the conduit by which individual intelligence is shared and transformed into societal intelligence.
+In the final minutes of the discussion, LeCun, perhaps being a little provocative, claimed language is "not that complicated", nor that crucial to achieving general intelligence ([59:54](javascript:goTo(59,54))). To support this, he appealed to the fact that orangutans are almost as intelligent as humans, yet they have no language.
+
+In response, Manning leaped to the defense of language ([1:01:05](javascript:goTo(61,05))). Language, he claimed, is crucial to general intelligence, because language is the conduit by which individual intelligence is shared and transformed into societal intelligence ([1:01:29](javascript:goTo(61,29))).
 
 ### Miscellaneous notes and further reading
 
