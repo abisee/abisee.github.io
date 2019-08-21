@@ -235,7 +235,7 @@ By __increasing specificity__ to around human levels, we obtain improvements to 
 However, finding the right balance is difficult -- increasing specificity too much leads to lower <font color="#db4437">making sense</font> and <font color="#db4437">fluency</font> scores.
 
 {% include image.html
-  img="controllable_dialogue/spec2.png"
+  img="controllable_dialogue/specificity.png"
   alt="An example chat between the bot and a human"
   caption="Our increased specificity bot typically offers more interesting details about itself."
   width=350
